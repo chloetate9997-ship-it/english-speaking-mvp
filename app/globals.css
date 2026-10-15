@@ -1,26 +1,207 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-app);
+  --font-mono: var(--font-app-mono);
+  --font-heading: var(--font-app);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-subtle: var(--subtle);
+  --color-brand: var(--brand);
+  --color-accent-red: var(--accent-red);
+  --color-play: var(--play);
+  --color-warm: var(--warm);
+  --color-canvas: var(--canvas);
+  --color-line: var(--line);
+  --color-divider: var(--divider);
+  --color-segment: var(--segment);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-hero: var(--radius-hero-token);
+  --radius-button: var(--radius-button-token);
+  --radius-pill: var(--radius-pill-token);
+  --shadow-hero: var(--elevation-hero);
+  --shadow-card: var(--elevation-card);
+  --spacing-page: var(--page-padding);
+  --spacing-app: var(--app-width);
+  --spacing-content: var(--content-width);
+  --spacing-nav: var(--nav-height);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --font-app: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-app-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --app-width: 402px;
+  --page-padding: 24px;
+  --content-width: 354px;
+  --nav-height: 72px;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --ink: #0e0f12;
+  --subtle: #6e7075;
+  --brand: #ff614f;
+  --accent-red: #fb4930;
+  --play: #ffc04a;
+  --warm: #ffebe2;
+  --canvas: #fdfdfc;
+  --line: #e8e4dd;
+  --divider: #e7eaf1;
+  --segment: #ecece8;
+  --radius-hero-token: 22px;
+  --radius-button-token: 16px;
+  --radius-pill-token: 24px;
+  --elevation-hero: 0 8px 20px rgba(77, 15, 6, 0.14);
+  --elevation-card: 0 5px 16px rgba(23, 20, 18, 0.06);
+  --background: #fdfdfc;
+  --foreground: #0e0f12;
+  --card: #ffffff;
+  --card-foreground: #0e0f12;
+  --popover: #ffffff;
+  --popover-foreground: #0e0f12;
+  --primary: #0e0f12;
+  --primary-foreground: #fdfdfc;
+  --secondary: #ecece8;
+  --secondary-foreground: #0e0f12;
+  --muted: #f4f3ef;
+  --muted-foreground: #6e7075;
+  --accent: #ff614f;
+  --accent-foreground: #ffffff;
+  --destructive: #fb4930;
+  --border: #e8e4dd;
+  --input: #e8e4dd;
+  --ring: #0e0f12;
+  --chart-1: #ff614f;
+  --chart-2: #ffc04a;
+  --chart-3: #6e7075;
+  --chart-4: #fb4930;
+  --chart-5: #0e0f12;
+  --radius: 1.125rem;
+  --sidebar: #fdfdfc;
+  --sidebar-foreground: #0e0f12;
+  --sidebar-primary: #0e0f12;
+  --sidebar-primary-foreground: #fdfdfc;
+  --sidebar-accent: #ffebe2;
+  --sidebar-accent-foreground: #0e0f12;
+  --sidebar-border: #e8e4dd;
+  --sidebar-ring: #0e0f12;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply font-sans;
+    background-color: #ecece8;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: #ecece8;
+    color: var(--ink);
+    font-family: var(--font-app);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes retell-eq {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.retell-eq-bar {
+  transform-origin: center;
+  animation: retell-eq 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .retell-eq-bar {
+    animation: none;
+  }
 }
