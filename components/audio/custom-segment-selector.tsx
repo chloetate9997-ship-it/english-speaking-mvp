@@ -58,7 +58,7 @@ export function CustomSegmentSelector({
     .map((segment) => segment.id);
 
   return (
-    <div className="fixed inset-y-0 left-1/2 z-30 w-full max-w-[402px] -translate-x-1/2 overflow-y-auto bg-canvas">
+    <div className="fixed inset-y-0 left-1/2 z-30 w-full max-w-[430px] -translate-x-1/2 overflow-y-auto bg-canvas sm:absolute sm:inset-y-auto sm:bottom-0 sm:left-0 sm:top-0 sm:max-h-[860px] sm:w-full sm:max-w-none sm:translate-x-0 sm:rounded-[28px]">
       <section
         aria-label={title}
         className="space-y-4 px-page pb-[var(--safe-area-bottom)] pt-[var(--safe-area-top)]"

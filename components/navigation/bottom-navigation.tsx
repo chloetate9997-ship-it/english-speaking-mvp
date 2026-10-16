@@ -17,7 +17,7 @@ export function BottomNavigation() {
   return (
     <nav
       aria-label="主导航"
-      className="fixed bottom-0 left-1/2 z-10 grid h-[calc(var(--nav-height)+var(--safe-area-bottom))] w-full max-w-[402px] -translate-x-1/2 grid-cols-3 border-t border-divider bg-canvas/95 pb-[var(--safe-area-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-10 mx-auto grid h-[calc(var(--nav-height)+var(--safe-area-bottom))] w-full max-w-[430px] grid-cols-3 border-t border-divider bg-canvas/95 pb-[var(--safe-area-bottom)] backdrop-blur sm:absolute sm:rounded-b-[28px]"
     >
       {items.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);

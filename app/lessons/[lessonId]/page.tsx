@@ -60,6 +60,18 @@ export default async function ListenPage({ params }: ListenPageProps) {
           durationSeconds={lesson01.durationSeconds}
           segments={lesson01.segments}
         />
+        <SurfaceCard>
+          <SectionHeader title="AI 情景口语教练" />
+          <p className="mt-2 text-sm text-subtle">
+            选择情景，与 AI 教练多轮对话，练习本篇目标表达并获得纠错与报告。
+          </p>
+          <Link
+            className="mt-3 inline-flex text-sm font-semibold text-accent-red"
+            href={`/lessons/${lessonId}/coach`}
+          >
+            开始 AI 情景练习
+          </Link>
+        </SurfaceCard>
         <SurfaceCard className="bg-warm">
           <SectionHeader title="我的笔记" />
           <p className="mt-2 text-sm text-subtle">

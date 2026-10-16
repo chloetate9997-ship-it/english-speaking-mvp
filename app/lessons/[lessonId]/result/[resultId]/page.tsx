@@ -103,6 +103,14 @@ export default async function ResultPage({ params }: ResultPageProps) {
             className={cn(
               "inline-flex h-[52px] w-full items-center justify-center rounded-button border border-line bg-card px-5 text-[15px] font-semibold text-ink",
             )}
+            href={`/lessons/${lessonId}/coach`}
+          >
+            开始 AI 情景练习
+          </Link>
+          <Link
+            className={cn(
+              "inline-flex h-[52px] w-full items-center justify-center rounded-button border border-line bg-card px-5 text-[15px] font-semibold text-ink",
+            )}
             href={`/lessons/${lessonId}/retell`}
           >
             重新录制

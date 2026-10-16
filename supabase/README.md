@@ -6,12 +6,13 @@
 2. 进入 Project Settings → Data API，复制：
    - `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`
    - `Publishable`（`sb_publishable_...`）→ `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-3. 切勿把 `service_role` / secret key 放进代码或发到聊天中；本项目不会使用它们。
+3. 情景 Agent 的服务端写入需要 `service_role` / secret key。只把它保存到本地 `.env.local`
+   或 Vercel 的服务端环境变量中，切勿放进代码、发到聊天或使用 `NEXT_PUBLIC_` 前缀。
 
 ## 2. 执行 migration
 
-- Dashboard → SQL Editor → New query，把 `supabase/migrations/001_initial_schema.sql`
-  全文粘贴后 Run（含建表、RLS、grants、私有 bucket `retell-recordings`）。
+- Dashboard → SQL Editor → New query，按文件名前的数字顺序执行
+  `supabase/migrations/001_*.sql` 至最新迁移。
 - 或用 Supabase CLI：`supabase db push`（需自行登录 CLI）。
 
 ## 3. 本地环境变量
@@ -21,6 +22,11 @@
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://xxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxx
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+OPENAI_FEEDBACK_MODEL=gpt-4o-mini
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+RAG_SYNC_SECRET=
 ```
 
 未设置这两个变量时，应用自动进入演示模式：Mock 课程、localStorage 笔记均可照常使用。

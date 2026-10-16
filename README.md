@@ -1,12 +1,14 @@
 # 开口说英语 · 精听复述练习
 
-一句话：面向“听得懂、开不了口”的成人学习者，用 20 篇精听 + 分段复述 + AI 结构化反馈，练到敢开口。
+一句话：面向“听得懂、开不了口”的成人学习者，用课程精听、复述反馈和课程 RAG 驱动的 AI 情景对话，练到敢开口。
 
 ## 主要功能
 
 - 课程精听：双语段落、起止秒跳转、关键词。
 - 分段/整篇复述：浏览器录音、本地预览、明确提交才上传。
 - AI 反馈：英文转写 + 内容得分/已覆盖/遗漏/语言建议/自然表达/下一步练习。
+- AI 情景口语：三个场景、多轮 Agent 动态提示、纠错、自然表达与四维评分。
+- 课程 RAG：仅检索当前课程知识和目标表达，为 Agent 提问与反馈提供依据。
 - 笔记：按课程/段落新增、编辑、删除，云端或本浏览器持久化。
 - 学习进度与历史：节流保存进度，历史展示真实记录。
 - 登录：邮箱 magic link/OTP，PKCE confirm 回跳。
@@ -18,7 +20,7 @@ Next.js 16 App Router、TypeScript strict、Tailwind、Supabase（Auth/Database/
 ```mermaid
 flowchart LR
     UI[页面/组件] --> DATA[lib/data]
-    UI --> API[POST /api/retell/analyze]
+    UI --> API[复述 / 情景练习 API]
     DATA --> SB[Supabase]
     API --> SB
     API --> AI[OpenAI]
@@ -49,7 +51,7 @@ OPENAI_API_KEY=
 OPENAI_FEEDBACK_MODEL=gpt-4o-mini
 ```
 
-步骤：Supabase 建项目 → SQL Editor 依次执行 `supabase/migrations/001_initial_schema.sql`、`002_retell_feedback.sql` → 复制 URL/publishable key → Auth URL Configuration 加 `http://localhost:3000/auth/confirm`（及生产域）。详见 `supabase/README.md`。真实 AI 流程入口：登录 → 录音提交 → 自动分析 → `/lessons/[lessonId]/result/[resultId]` 真实结果页。
+步骤：Supabase 建项目 → 按编号执行 `supabase/migrations/` 中的迁移 → 配置环境变量 → Auth URL Configuration 加本地及生产回调地址。详见 `supabase/README.md` 和 `docs/DEPLOYMENT.md`。真实流程入口：登录后可进行复述分析或进入 `/lessons/lesson-01/coach` 开始 AI 情景练习。
 
 ## 数据与隐私
 
@@ -74,7 +76,7 @@ npm run build -- --webpack
 
 ## 已知限制与路线图
 
-- 仅第 1 篇有完整音频/段落，其他课程为占位（可渲染，不 404）。
-- 无实时对话、无音素级发音评分、无后台批量分析。
+- 仅第 1 篇有完整音频、段落和情景 Agent；其他课程为占位（可渲染，不 404）。
+- 情景对话为提交式多轮交互，不是实时语音通话；暂无音素级发音评分。
 - e2e 冒烟靠 `docs/QA-CHECKLIST.md` 人工执行。
-- 下一步：发音维度、复习计划、Preview 上线 QA。面试脚本见 `docs/INTERVIEW-DEMO.md`。
+- 下一步：先完成线上 RAG/Agent 与真机录音验收，再扩展课程与复习计划。产品问题与优先级见 `docs/PRODUCT-AUDIT.md`，面试脚本见 `docs/INTERVIEW-DEMO.md`。
