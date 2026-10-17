@@ -92,7 +92,7 @@ export function ListenExperience({
   const handleAudioError: ReactEventHandler<HTMLAudioElement> = () => {
     setLoadState("error");
     setIsPlaying(false);
-    setAudioError("课程音频尚未添加或无法读取，请确认已放置 public/audio/lesson-01.mp3。");
+    setAudioError("课程演示音频尚未添加或无法读取，请稍后重试。");
   };
 
   function persistProgress(seconds: number) {
@@ -129,7 +129,7 @@ export function ListenExperience({
     }
     void audio.play().catch(() => {
       setLoadState("error");
-      setAudioError("课程音频尚未添加或无法读取，请确认已放置 public/audio/lesson-01.mp3。");
+      setAudioError("课程演示音频尚未添加或无法读取，请稍后重试。");
     });
   }
 
