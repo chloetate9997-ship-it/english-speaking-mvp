@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import type { ReactEventHandler } from "react";
 import { ChevronDown, ChevronRight, Pause, Play } from "lucide-react";
-import type { LessonSegment } from "@/lib/types";
+import type { LessonSegment, PhraseNote } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -22,6 +22,7 @@ const modeOptions = [
 interface ListenExperienceProps {
   audioUrl: string;
   lessonId: string;
+  phraseNotes?: PhraseNote[];
   segments: LessonSegment[];
   durationSeconds: number;
 }
@@ -29,10 +30,12 @@ interface ListenExperienceProps {
 export function ListenExperience({
   audioUrl,
   lessonId,
+  phraseNotes = [],
   segments,
   durationSeconds,
 }: ListenExperienceProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const transcriptRef = useRef<HTMLDivElement | null>(null);
   const lastSavedRef = useRef(0);
   const [mode, setMode] = useState<ListenMode>("full");
   const [display, setDisplay] = useState<PlayerDisplay>("expanded");
@@ -42,6 +45,8 @@ export function ListenExperience({
   const [mediaDuration, setMediaDuration] = useState(durationSeconds);
   const [audioError, setAudioError] = useState<string | null>(null);
   const [showChinese, setShowChinese] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [selectedExplanation, setSelectedExplanation] = useState("");
 
   const current = segments[0];
   const rangeMin = mode === "segment" && current ? current.startSeconds : 0;
@@ -117,11 +122,36 @@ export function ListenExperience({
     const audio = audioRef.current;
     setMode(next);
     setShowChinese(false);
+    setSelectedText("");
+    setSelectedExplanation("");
     if (next === "segment" && current && audio && loadState === "ready") {
       audio.pause();
       audio.currentTime = current.startSeconds;
       setCurrentTime(current.startSeconds);
     }
+  }
+
+  function captureTextSelection() {
+    const selection = window.getSelection();
+    const transcript = transcriptRef.current;
+    const selected = selection?.toString().trim() ?? "";
+    if (!selection || !transcript || !selected || !selection.anchorNode) return;
+    if (!transcript.contains(selection.anchorNode)) return;
+    setSelectedText(selected);
+    setSelectedExplanation("");
+  }
+
+  function explainSelection() {
+    const normalized = selectedText.toLocaleLowerCase();
+    const phrase = phraseNotes.find(
+      (note) => note.english.toLocaleLowerCase() === normalized,
+    );
+    const segment = segments.find((item) =>
+      item.englishText.toLocaleLowerCase().includes(normalized),
+    );
+    setSelectedExplanation(
+      phrase?.chinese ?? segment?.chineseText ?? "这段内容暂时没有现成的中文解释。",
+    );
   }
 
   const audioUnavailable = loadState === "error";
@@ -245,7 +275,12 @@ export function ListenExperience({
         <SurfaceCard>
           <SectionHeader title="英文全文" />
           <p className="mt-2 text-xs text-subtle">中文解释标签 · 共 5 段 · 约 7 分钟</p>
-          <div className="mt-4 space-y-5">
+          <div
+            className="mt-4 space-y-5"
+            onMouseUp={captureTextSelection}
+            onTouchEnd={() => window.setTimeout(captureTextSelection, 0)}
+            ref={transcriptRef}
+          >
             {segments.map((segment) => (
               <div key={segment.id}>
                 <p className="text-[15px] leading-relaxed text-ink">{segment.englishText}</p>
@@ -253,6 +288,23 @@ export function ListenExperience({
               </div>
             ))}
           </div>
+          {selectedText ? (
+            <div className="mt-4 rounded-lg bg-warm p-3" aria-live="polite">
+              <p className="text-xs text-subtle">已选取</p>
+              <p className="mt-1 break-words text-sm font-medium text-ink">“{selectedText}”</p>
+              {selectedExplanation ? (
+                <p className="mt-2 text-sm leading-relaxed text-ink">{selectedExplanation}</p>
+              ) : (
+                <button
+                  className="mt-3 inline-flex h-9 items-center justify-center rounded-button bg-ink px-4 text-xs font-semibold text-white"
+                  onClick={explainSelection}
+                  type="button"
+                >
+                  解释选中内容
+                </button>
+              )}
+            </div>
+          ) : null}
         </SurfaceCard>
       ) : (
         <SurfaceCard>

@@ -62,6 +62,7 @@ export default async function ListenPage({ params }: ListenPageProps) {
           audioUrl={lesson01.audioUrl}
           lessonId={lessonId}
           durationSeconds={lesson01.durationSeconds}
+          phraseNotes={lesson01Notes}
           segments={lesson01.segments}
         />
         <SurfaceCard>
