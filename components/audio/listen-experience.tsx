@@ -35,7 +35,8 @@ export function ListenExperience({
   const [audioError, setAudioError] = useState<string | null>(null);
   const [showChinese, setShowChinese] = useState(false);
 
-  const firstSegment = segments[0];
+  const fullEnglishText = segments.map((segment) => segment.englishText).join("\n\n");
+  const fullChineseText = segments.map((segment) => segment.chineseText).join("\n\n");
   const rangeMin = 0;
   const rangeMax = mediaDuration;
   const displayTime = `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
@@ -211,11 +212,13 @@ export function ListenExperience({
             {showChinese ? "显示英文" : "中文解释"}
           </button>
         </div>
-        <p className="mt-2 text-xs text-subtle">第 1 段 · 先听音频，再对照原文</p>
-        {firstSegment ? (
+        <p className="mt-2 text-xs text-subtle">
+          {showChinese ? "中文全文" : "英文全文"} · 先听音频，再对照原文
+        </p>
+        {segments.length > 0 ? (
           <div className="mt-4" aria-live="polite">
-            <p className="text-[15px] leading-relaxed text-ink">
-              {showChinese ? firstSegment.chineseText : firstSegment.englishText}
+            <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">
+              {showChinese ? fullChineseText : fullEnglishText}
             </p>
           </div>
         ) : null}
