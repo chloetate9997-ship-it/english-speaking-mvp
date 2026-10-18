@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { ReactEventHandler } from "react";
-import { ChevronDown, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronDown, ChevronRight, Pause, Play, Plus, Volume2 } from "lucide-react";
 import type { LessonSegment, PhraseNote } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -18,6 +18,13 @@ const modeOptions = [
   { value: "full", label: "整篇" },
   { value: "segment", label: "分段" },
 ] as const;
+
+const phonetics: Record<string, string> = {
+  suppose: "/səˈpoʊz/",
+  "in my opinion": "/ɪn maɪ əˈpɪnjən/",
+  "i couldn't agree more": "/aɪ ˈkʊdənt əˈɡriː mɔːr/",
+  "i see what you're saying, but…": "/aɪ siː wʌt jʊr ˈseɪɪŋ bʌt/",
+};
 
 interface ListenExperienceProps {
   audioUrl: string;
@@ -47,6 +54,8 @@ export function ListenExperience({
   const [showChinese, setShowChinese] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [selectedExplanation, setSelectedExplanation] = useState("");
+  const [selectionPosition, setSelectionPosition] = useState({ left: 0, top: 0 });
+  const [noteSaved, setNoteSaved] = useState(false);
 
   const current = segments[0];
   const rangeMin = mode === "segment" && current ? current.startSeconds : 0;
@@ -124,6 +133,7 @@ export function ListenExperience({
     setShowChinese(false);
     setSelectedText("");
     setSelectedExplanation("");
+    setNoteSaved(false);
     if (next === "segment" && current && audio && loadState === "ready") {
       audio.pause();
       audio.currentTime = current.startSeconds;
@@ -137,12 +147,14 @@ export function ListenExperience({
     const selected = selection?.toString().trim() ?? "";
     if (!selection || !transcript || !selected || !selection.anchorNode) return;
     if (!transcript.contains(selection.anchorNode)) return;
+    const range = selection.getRangeAt(0);
+    const selectionRect = range.getBoundingClientRect();
+    const transcriptRect = transcript.getBoundingClientRect();
+    const cardWidth = Math.min(320, transcript.clientWidth);
+    const preferredLeft = selectionRect.left - transcriptRect.left;
+    const left = Math.max(0, Math.min(preferredLeft, transcript.clientWidth - cardWidth));
     setSelectedText(selected);
-    setSelectedExplanation("");
-  }
-
-  function explainSelection() {
-    const normalized = selectedText.toLocaleLowerCase();
+    const normalized = selected.toLocaleLowerCase();
     const phrase = phraseNotes.find(
       (note) => note.english.toLocaleLowerCase() === normalized,
     );
@@ -152,6 +164,39 @@ export function ListenExperience({
     setSelectedExplanation(
       phrase?.chinese ?? segment?.chineseText ?? "这段内容暂时没有现成的中文解释。",
     );
+    setSelectionPosition({
+      left,
+      top: selectionRect.bottom - transcriptRect.top + 8,
+    });
+    setNoteSaved(false);
+  }
+
+  function playSelectedText() {
+    if (!("speechSynthesis" in window) || !selectedText) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(selectedText);
+    utterance.lang = "en-US";
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function addSelectionToNotes() {
+    const key = `demo-notes:${lessonId}`;
+    const content = `${selectedText} · ${selectedExplanation}`;
+    try {
+      const stored = window.localStorage.getItem(key);
+      const existing = stored
+        ? (JSON.parse(stored) as Array<{ id: string; content: string }>)
+        : phraseNotes.map((note) => ({ id: note.id, content: `${note.english} · ${note.chinese}` }));
+      if (!existing.some((note) => note.content === content)) {
+        window.localStorage.setItem(
+          key,
+          JSON.stringify([{ id: `selection-${Date.now()}`, content }, ...existing]),
+        );
+      }
+      setNoteSaved(true);
+    } catch {
+      setNoteSaved(false);
+    }
   }
 
   const audioUnavailable = loadState === "error";
@@ -276,7 +321,7 @@ export function ListenExperience({
           <SectionHeader title="英文全文" />
           <p className="mt-2 text-xs text-subtle">中文解释标签 · 共 5 段 · 约 7 分钟</p>
           <div
-            className="mt-4 space-y-5"
+            className="relative mt-4 space-y-5"
             onMouseUp={captureTextSelection}
             onTouchEnd={() => window.setTimeout(captureTextSelection, 0)}
             ref={transcriptRef}
@@ -287,24 +332,53 @@ export function ListenExperience({
                 <p className="mt-1.5 text-sm leading-relaxed text-subtle">{segment.chineseText}</p>
               </div>
             ))}
+            {selectedText ? (
+              <div
+                aria-live="polite"
+                className="absolute z-20 rounded-[24px] border-2 border-[#a9c4ff] bg-white px-5 py-4 shadow-[0_12px_30px_rgba(29,45,80,0.16)]"
+                style={{
+                  left: selectionPosition.left,
+                  top: selectionPosition.top,
+                  width: "min(320px, 100%)",
+                }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="break-words text-[26px] font-bold leading-tight text-ink">
+                      {selectedText}
+                    </p>
+                    {phonetics[selectedText.toLocaleLowerCase()] ? (
+                      <p className="mt-1 text-lg text-ink">
+                        {phonetics[selectedText.toLocaleLowerCase()]}
+                      </p>
+                    ) : null}
+                  </div>
+                  <button
+                    aria-label="朗读选中内容"
+                    className="flex size-14 shrink-0 items-center justify-center rounded-full border-4 border-white bg-play text-white shadow-card"
+                    onClick={playSelectedText}
+                    type="button"
+                  >
+                    <Volume2 aria-hidden className="size-6" />
+                  </button>
+                </div>
+                <p className="mt-4 text-[22px] font-bold leading-relaxed text-ink">
+                  {selectedExplanation}
+                </p>
+                <div className="mt-3 border-t border-line pt-3">
+                  <button
+                    className="inline-flex h-10 items-center justify-center gap-1 rounded-pill border border-line px-4 text-sm font-semibold text-accent-red"
+                    disabled={noteSaved}
+                    onClick={addSelectionToNotes}
+                    type="button"
+                  >
+                    <Plus aria-hidden className="size-4" />
+                    {noteSaved ? "已加入笔记" : "加入笔记"}
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
-          {selectedText ? (
-            <div className="mt-4 rounded-lg bg-warm p-3" aria-live="polite">
-              <p className="text-xs text-subtle">已选取</p>
-              <p className="mt-1 break-words text-sm font-medium text-ink">“{selectedText}”</p>
-              {selectedExplanation ? (
-                <p className="mt-2 text-sm leading-relaxed text-ink">{selectedExplanation}</p>
-              ) : (
-                <button
-                  className="mt-3 inline-flex h-9 items-center justify-center rounded-button bg-ink px-4 text-xs font-semibold text-white"
-                  onClick={explainSelection}
-                  type="button"
-                >
-                  解释选中内容
-                </button>
-              )}
-            </div>
-          ) : null}
         </SurfaceCard>
       ) : (
         <SurfaceCard>
