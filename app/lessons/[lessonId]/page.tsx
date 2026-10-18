@@ -77,19 +77,6 @@ export default async function ListenPage({ params }: ListenPageProps) {
             开始 AI 情景练习
           </Link>
         </SurfaceCard>
-        <SurfaceCard className="bg-warm">
-          <SectionHeader title="我的笔记" />
-          <p className="mt-2 text-sm text-subtle">
-            已记录 {lesson01Notes.length} 条表达：suppose、In my opinion、I couldn&apos;t agree
-            more……
-          </p>
-          <Link
-            className="mt-3 inline-flex text-sm font-semibold text-accent-red"
-            href={`/lessons/${lessonId}/notes`}
-          >
-            查看本篇笔记
-          </Link>
-        </SurfaceCard>
       </main>
     </MobileAppShell>
   );

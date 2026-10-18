@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactEventHandler } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronRight, Pause, Play, Plus, Volume2 } from "lucide-react";
 import type { LessonSegment, PhraseNote } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
@@ -332,8 +333,26 @@ export function ListenExperience({
 
       {mode === "full" ? (
         <SurfaceCard>
-          <SectionHeader title="英文全文" />
-          <p className="mt-2 text-xs text-subtle">中文解释标签 · 共 5 段 · 约 7 分钟</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <SectionHeader title="英文全文" />
+              <button
+                aria-pressed={showChinese}
+                className="shrink-0 text-[13px] font-medium text-subtle transition-colors hover:text-ink"
+                onClick={() => setShowChinese((value) => !value)}
+                type="button"
+              >
+                {showChinese ? "隐藏解释" : "中文解释"}
+              </button>
+            </div>
+            <Link
+              className="shrink-0 text-xs font-semibold text-accent-red"
+              href={`/lessons/${lessonId}/notes`}
+            >
+              我的笔记
+            </Link>
+          </div>
+          <p className="mt-2 text-xs text-subtle">共 5 段 · 约 7 分钟</p>
           <div
             className="relative mt-4 space-y-5"
             onMouseUp={captureTextSelection}
@@ -343,7 +362,11 @@ export function ListenExperience({
             {segments.map((segment) => (
               <div key={segment.id}>
                 <p className="text-[15px] leading-relaxed text-ink">{segment.englishText}</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-subtle">{segment.chineseText}</p>
+                {showChinese ? (
+                  <p className="mt-1.5 text-sm leading-relaxed text-subtle">
+                    {segment.chineseText}
+                  </p>
+                ) : null}
               </div>
             ))}
             {selectedText ? (
