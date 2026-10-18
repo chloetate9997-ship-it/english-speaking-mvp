@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactEventHandler } from "react";
 import { ChevronDown, ChevronRight, Pause, Play, Plus, Volume2 } from "lucide-react";
 import type { LessonSegment, PhraseNote } from "@/lib/types";
@@ -43,6 +43,7 @@ export function ListenExperience({
 }: ListenExperienceProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
+  const explanationCardRef = useRef<HTMLDivElement | null>(null);
   const lastSavedRef = useRef(0);
   const [mode, setMode] = useState<ListenMode>("full");
   const [display, setDisplay] = useState<PlayerDisplay>("expanded");
@@ -64,6 +65,19 @@ export function ListenExperience({
     mode === "segment" && current
       ? `${formatClock(Math.floor(currentTime))} / ${formatClock(current.endSeconds)}`
       : `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
+
+  useEffect(() => {
+    function dismissExplanation(event: PointerEvent) {
+      if (explanationCardRef.current?.contains(event.target as Node)) return;
+      setSelectedText("");
+      setSelectedExplanation("");
+      setNoteSaved(false);
+      window.getSelection()?.removeAllRanges();
+    }
+
+    document.addEventListener("pointerdown", dismissExplanation);
+    return () => document.removeEventListener("pointerdown", dismissExplanation);
+  }, []);
 
   const handleLoadedMetadata: ReactEventHandler<HTMLAudioElement> = (event) => {
     const audio = event.currentTarget;
@@ -150,7 +164,7 @@ export function ListenExperience({
     const range = selection.getRangeAt(0);
     const selectionRect = range.getBoundingClientRect();
     const transcriptRect = transcript.getBoundingClientRect();
-    const cardWidth = Math.min(320, transcript.clientWidth);
+    const cardWidth = Math.min(256, transcript.clientWidth);
     const preferredLeft = selectionRect.left - transcriptRect.left;
     const left = Math.max(0, Math.min(preferredLeft, transcript.clientWidth - cardWidth));
     setSelectedText(selected);
@@ -335,39 +349,40 @@ export function ListenExperience({
             {selectedText ? (
               <div
                 aria-live="polite"
-                className="absolute z-20 rounded-[24px] border-2 border-[#a9c4ff] bg-white px-5 py-4 shadow-[0_12px_30px_rgba(29,45,80,0.16)]"
+                className="absolute z-20 rounded-[20px] border-2 border-[#a9c4ff] bg-white px-4 py-3 shadow-[0_10px_24px_rgba(29,45,80,0.16)]"
+                ref={explanationCardRef}
                 style={{
                   left: selectionPosition.left,
                   top: selectionPosition.top,
-                  width: "min(320px, 100%)",
+                  width: "min(256px, 100%)",
                 }}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="break-words text-[26px] font-bold leading-tight text-ink">
+                    <p className="break-words text-[21px] font-bold leading-tight text-ink">
                       {selectedText}
                     </p>
                     {phonetics[selectedText.toLocaleLowerCase()] ? (
-                      <p className="mt-1 text-lg text-ink">
+                      <p className="mt-1 text-[15px] text-ink">
                         {phonetics[selectedText.toLocaleLowerCase()]}
                       </p>
                     ) : null}
                   </div>
                   <button
                     aria-label="朗读选中内容"
-                    className="flex size-14 shrink-0 items-center justify-center rounded-full border-4 border-white bg-play text-white shadow-card"
+                    className="flex size-11 shrink-0 items-center justify-center rounded-full border-[3px] border-white bg-play text-white shadow-card"
                     onClick={playSelectedText}
                     type="button"
                   >
-                    <Volume2 aria-hidden className="size-6" />
+                    <Volume2 aria-hidden className="size-5" />
                   </button>
                 </div>
-                <p className="mt-4 text-[22px] font-bold leading-relaxed text-ink">
+                <p className="mt-3 text-lg font-bold leading-relaxed text-ink">
                   {selectedExplanation}
                 </p>
-                <div className="mt-3 border-t border-line pt-3">
+                <div className="mt-2.5 border-t border-line pt-2.5">
                   <button
-                    className="inline-flex h-10 items-center justify-center gap-1 rounded-pill border border-line px-4 text-sm font-semibold text-accent-red"
+                    className="inline-flex h-8 items-center justify-center gap-1 rounded-pill border border-line px-3 text-xs font-semibold text-accent-red"
                     disabled={noteSaved}
                     onClick={addSelectionToNotes}
                     type="button"
