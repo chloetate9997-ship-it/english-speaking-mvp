@@ -5,21 +5,12 @@ import type { ReactEventHandler } from "react";
 import { ChevronDown, ChevronRight, Pause, Play } from "lucide-react";
 import type { LessonSegment } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
-import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SectionHeader } from "@/components/ui/section-header";
 import { SurfaceCard } from "@/components/ui/surface-card";
-import { CustomSegmentSelector } from "@/components/audio/custom-segment-selector";
 import { saveProgress } from "@/lib/data/progress";
-import { cn } from "@/lib/utils";
 
-type ListenMode = "full" | "segment";
 type PlayerDisplay = "expanded" | "collapsed";
 type AudioLoadState = "idle" | "loading" | "ready" | "error";
-
-const modeOptions = [
-  { value: "full", label: "整篇" },
-  { value: "segment", label: "分段" },
-] as const;
 
 interface ListenExperienceProps {
   audioUrl: string;
@@ -36,36 +27,18 @@ export function ListenExperience({
 }: ListenExperienceProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastSavedRef = useRef(0);
-  const [mode, setMode] = useState<ListenMode>("full");
-  const [currentOrder, setCurrentOrder] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
-    segments.map((segment) => segment.id),
-  );
-  const [selectingCustom, setSelectingCustom] = useState(false);
   const [display, setDisplay] = useState<PlayerDisplay>("expanded");
   const [loadState, setLoadState] = useState<AudioLoadState>("loading");
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [mediaDuration, setMediaDuration] = useState(durationSeconds);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [showChinese, setShowChinese] = useState(false);
 
-  const visibleSegments = segments.filter((segment) => selectedIds.includes(segment.id));
-  const current =
-    visibleSegments.find((segment) => segment.order === currentOrder) ??
-    visibleSegments[0];
-  const currentIndex = visibleSegments.findIndex(
-    (segment) => segment.id === current?.id,
-  );
-  const isFirst = currentIndex <= 0;
-  const isLast = currentIndex === visibleSegments.length - 1;
-
-  const rangeMin = mode === "segment" && current ? current.startSeconds : 0;
-  const rangeMax =
-    mode === "segment" && current ? current.endSeconds : mediaDuration;
-  const displayTime =
-    mode === "segment" && current
-      ? `${formatClock(Math.floor(currentTime))} / ${formatClock(current.endSeconds)}`
-      : `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
+  const firstSegment = segments[0];
+  const rangeMin = 0;
+  const rangeMax = mediaDuration;
+  const displayTime = `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
 
   const handleLoadedMetadata: ReactEventHandler<HTMLAudioElement> = (event) => {
     const audio = event.currentTarget;
@@ -79,14 +52,7 @@ export function ListenExperience({
   };
 
   const handleTimeUpdate: ReactEventHandler<HTMLAudioElement> = (event) => {
-    const audio = event.currentTarget;
-    if (mode === "segment" && current && audio.currentTime >= current.endSeconds) {
-      audio.pause();
-      audio.currentTime = Math.max(current.endSeconds - 0.1, current.startSeconds);
-      setCurrentTime(audio.currentTime);
-      return;
-    }
-    setCurrentTime(audio.currentTime);
+    setCurrentTime(event.currentTarget.currentTime);
   };
 
   const handleAudioError: ReactEventHandler<HTMLAudioElement> = () => {
@@ -102,30 +68,12 @@ export function ListenExperience({
     void saveProgress({ lessonId, progressSeconds: seconds }).catch(() => {});
   }
 
-  function jumpToSegment(order: number) {
-    const target = visibleSegments.find((segment) => segment.order === order);
-    const audio = audioRef.current;
-    if (!target) return;
-    setCurrentOrder(order);
-    if (audio && loadState === "ready") {
-      audio.pause();
-      audio.currentTime = target.startSeconds;
-      setCurrentTime(target.startSeconds);
-    }
-  }
-
   function togglePlay() {
     const audio = audioRef.current;
     if (!audio || loadState === "error") return;
     if (isPlaying) {
       audio.pause();
       return;
-    }
-    if (mode === "segment" && current) {
-      if (audio.currentTime < current.startSeconds || audio.currentTime >= current.endSeconds - 0.15) {
-        audio.currentTime = current.startSeconds;
-        setCurrentTime(current.startSeconds);
-      }
     }
     void audio.play().catch(() => {
       setLoadState("error");
@@ -139,46 +87,6 @@ export function ListenExperience({
     const clamped = Math.min(Math.max(value, rangeMin), rangeMax);
     audio.currentTime = clamped;
     setCurrentTime(clamped);
-  }
-
-  function handleModeChange(next: ListenMode) {
-    setMode(next);
-    if (next === "segment" && current) {
-      jumpToSegment(current.order);
-    }
-  }
-
-  function confirmCustom(ids: string[]) {
-    setSelectedIds(ids);
-    const first = segments.find((segment) => segment.id === ids[0]);
-    if (first) {
-      setCurrentOrder(first.order);
-      const audio = audioRef.current;
-      if (audio && loadState === "ready") {
-        audio.pause();
-        audio.currentTime = first.startSeconds;
-        setCurrentTime(first.startSeconds);
-      }
-    }
-    setSelectingCustom(false);
-  }
-
-  if (selectingCustom) {
-    return (
-      <>
-        <audio ref={audioRef} src={audioUrl} preload="metadata" aria-hidden tabIndex={-1} />
-        <CustomSegmentSelector
-          confirmLabel="完成"
-          description="点击选择，Shift+点击可快速选择连续范围"
-          initialSelectedIds={selectedIds}
-          onCancel={() => setSelectingCustom(false)}
-          onConfirm={confirmCustom}
-          segments={segments}
-          title="自定义段落"
-          tone="listen"
-        />
-      </>
-    );
   }
 
   const audioUnavailable = loadState === "error";
@@ -287,108 +195,31 @@ export function ListenExperience({
                 {audioError}
               </p>
             ) : null}
-            <SegmentedControl
-              ariaLabel="播放范围"
-              className="mt-3"
-              onChange={handleModeChange}
-              options={[...modeOptions]}
-              value={mode}
-            />
           </>
         )}
       </section>
 
-      {mode === "full" ? (
-        <SurfaceCard>
-          <SectionHeader title="英文全文" />
-          <p className="mt-2 text-xs text-subtle">中文解释标签 · 共 5 段 · 约 7 分钟</p>
-          <div className="mt-4 space-y-5">
-            {segments.map((segment) => (
-              <div key={segment.id}>
-                <p className="text-[15px] leading-relaxed text-ink">
-                  {segment.englishText}
-                </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-subtle">
-                  {segment.chineseText}
-                </p>
-              </div>
-            ))}
+      <SurfaceCard>
+        <div className="flex items-center justify-between gap-3">
+          <SectionHeader title="精听原文" />
+          <button
+            aria-pressed={showChinese}
+            className="inline-flex h-9 shrink-0 items-center justify-center rounded-pill border border-line bg-card px-3 text-xs font-semibold text-accent-red transition-colors hover:bg-warm"
+            onClick={() => setShowChinese((value) => !value)}
+            type="button"
+          >
+            {showChinese ? "显示英文" : "中文解释"}
+          </button>
+        </div>
+        <p className="mt-2 text-xs text-subtle">第 1 段 · 先听音频，再对照原文</p>
+        {firstSegment ? (
+          <div className="mt-4" aria-live="polite">
+            <p className="text-[15px] leading-relaxed text-ink">
+              {showChinese ? firstSegment.chineseText : firstSegment.englishText}
+            </p>
           </div>
-        </SurfaceCard>
-      ) : (
-        <SurfaceCard>
-          <div className="flex items-center justify-between">
-            <SectionHeader title="分段精听" />
-            <button
-              className="inline-flex items-center gap-0.5 text-xs font-semibold text-accent-red"
-              onClick={() => setSelectingCustom(true)}
-              type="button"
-            >
-              自定义段落
-              <ChevronRight aria-hidden className="size-3.5" />
-            </button>
-          </div>
-          <div className="mt-3 flex gap-2" role="group" aria-label="段落选择">
-            {visibleSegments.map((segment) => (
-              <button
-                aria-pressed={segment.order === current?.order}
-                className={cn(
-                  "flex h-9 min-w-9 flex-1 items-center justify-center rounded-pill text-sm font-medium transition-colors duration-200",
-                  segment.order === current?.order
-                    ? "bg-brand text-white"
-                    : "bg-segment text-subtle",
-                )}
-                key={segment.id}
-                onClick={() => jumpToSegment(segment.order)}
-                type="button"
-              >
-                {segment.order}
-              </button>
-            ))}
-          </div>
-          {current ? (
-            <div className="mt-4" aria-live="polite">
-              <p className="text-[15px] leading-relaxed text-ink">{current.englishText}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-subtle">
-                {current.chineseText}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {current.keywords.map((keyword) => (
-                  <span
-                    className="rounded-pill bg-muted px-2.5 py-1 text-xs text-subtle"
-                    key={keyword}
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-4 flex gap-3">
-                <button
-                  className="inline-flex h-11 flex-1 items-center justify-center rounded-button border border-line text-sm font-semibold text-ink disabled:opacity-40"
-                  disabled={isFirst}
-                  onClick={() =>
-                    jumpToSegment(visibleSegments[currentIndex - 1].order)
-                  }
-                  type="button"
-                >
-                  上一段
-                </button>
-                <button
-                  className="inline-flex h-11 flex-1 items-center justify-center rounded-button bg-ink text-sm font-semibold text-white disabled:opacity-40"
-                  disabled={isLast}
-                  onClick={() =>
-                    !isLast &&
-                    jumpToSegment(visibleSegments[currentIndex + 1].order)
-                  }
-                  type="button"
-                >
-                  {isLast ? "已完成全部段落" : "听懂了，下一段 →"}
-                </button>
-              </div>
-            </div>
-          ) : null}
-        </SurfaceCard>
-      )}
+        ) : null}
+      </SurfaceCard>
     </div>
   );
 }

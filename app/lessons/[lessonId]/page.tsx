@@ -47,8 +47,12 @@ export default async function ListenPage({ params }: ListenPageProps) {
 
   return (
     <MobileAppShell>
-      <PageHeader backHref="/" title={summary.title} />
-      <main className="space-y-5 px-page pb-10 pt-2">
+      <PageHeader
+        backHref="/"
+        className="pt-[calc(var(--safe-area-top)+12px)]"
+        title={summary.title}
+      />
+      <main className="space-y-5 px-page pb-10 pt-3">
         <StepTabs
           current="listen"
           listenHref={`/lessons/${lessonId}`}
