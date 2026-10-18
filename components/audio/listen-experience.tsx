@@ -5,12 +5,19 @@ import type { ReactEventHandler } from "react";
 import { ChevronDown, ChevronRight, Pause, Play } from "lucide-react";
 import type { LessonSegment } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import { SectionHeader } from "@/components/ui/section-header";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { saveProgress } from "@/lib/data/progress";
 
+type ListenMode = "full" | "segment";
 type PlayerDisplay = "expanded" | "collapsed";
 type AudioLoadState = "idle" | "loading" | "ready" | "error";
+
+const modeOptions = [
+  { value: "full", label: "整篇" },
+  { value: "segment", label: "分段" },
+] as const;
 
 interface ListenExperienceProps {
   audioUrl: string;
@@ -27,6 +34,7 @@ export function ListenExperience({
 }: ListenExperienceProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastSavedRef = useRef(0);
+  const [mode, setMode] = useState<ListenMode>("full");
   const [display, setDisplay] = useState<PlayerDisplay>("expanded");
   const [loadState, setLoadState] = useState<AudioLoadState>("loading");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -35,11 +43,13 @@ export function ListenExperience({
   const [audioError, setAudioError] = useState<string | null>(null);
   const [showChinese, setShowChinese] = useState(false);
 
-  const fullEnglishText = segments.map((segment) => segment.englishText).join("\n\n");
-  const fullChineseText = segments.map((segment) => segment.chineseText).join("\n\n");
-  const rangeMin = 0;
-  const rangeMax = mediaDuration;
-  const displayTime = `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
+  const current = segments[0];
+  const rangeMin = mode === "segment" && current ? current.startSeconds : 0;
+  const rangeMax = mode === "segment" && current ? current.endSeconds : mediaDuration;
+  const displayTime =
+    mode === "segment" && current
+      ? `${formatClock(Math.floor(currentTime))} / ${formatClock(current.endSeconds)}`
+      : `${formatClock(Math.floor(currentTime))} / ${formatClock(Math.floor(mediaDuration))}`;
 
   const handleLoadedMetadata: ReactEventHandler<HTMLAudioElement> = (event) => {
     const audio = event.currentTarget;
@@ -53,7 +63,14 @@ export function ListenExperience({
   };
 
   const handleTimeUpdate: ReactEventHandler<HTMLAudioElement> = (event) => {
-    setCurrentTime(event.currentTarget.currentTime);
+    const audio = event.currentTarget;
+    if (mode === "segment" && current && audio.currentTime >= current.endSeconds) {
+      audio.pause();
+      audio.currentTime = Math.max(current.endSeconds - 0.1, current.startSeconds);
+      setCurrentTime(audio.currentTime);
+      return;
+    }
+    setCurrentTime(audio.currentTime);
   };
 
   const handleAudioError: ReactEventHandler<HTMLAudioElement> = () => {
@@ -76,6 +93,12 @@ export function ListenExperience({
       audio.pause();
       return;
     }
+    if (mode === "segment" && current) {
+      if (audio.currentTime < current.startSeconds || audio.currentTime >= current.endSeconds - 0.15) {
+        audio.currentTime = current.startSeconds;
+        setCurrentTime(current.startSeconds);
+      }
+    }
     void audio.play().catch(() => {
       setLoadState("error");
       setAudioError("课程演示音频尚未添加或无法读取，请稍后重试。");
@@ -88,6 +111,17 @@ export function ListenExperience({
     const clamped = Math.min(Math.max(value, rangeMin), rangeMax);
     audio.currentTime = clamped;
     setCurrentTime(clamped);
+  }
+
+  function handleModeChange(next: ListenMode) {
+    const audio = audioRef.current;
+    setMode(next);
+    setShowChinese(false);
+    if (next === "segment" && current && audio && loadState === "ready") {
+      audio.pause();
+      audio.currentTime = current.startSeconds;
+      setCurrentTime(current.startSeconds);
+    }
   }
 
   const audioUnavailable = loadState === "error";
@@ -196,33 +230,53 @@ export function ListenExperience({
                 {audioError}
               </p>
             ) : null}
+            <SegmentedControl
+              ariaLabel="播放范围"
+              className="mt-3"
+              onChange={handleModeChange}
+              options={[...modeOptions]}
+              value={mode}
+            />
           </>
         )}
       </section>
 
-      <SurfaceCard>
-        <div className="flex items-center justify-between gap-3">
-          <SectionHeader title="精听原文" />
-          <button
-            aria-pressed={showChinese}
-            className="inline-flex h-9 shrink-0 items-center justify-center rounded-pill border border-line bg-card px-3 text-xs font-semibold text-accent-red transition-colors hover:bg-warm"
-            onClick={() => setShowChinese((value) => !value)}
-            type="button"
-          >
-            {showChinese ? "显示英文" : "中文解释"}
-          </button>
-        </div>
-        <p className="mt-2 text-xs text-subtle">
-          {showChinese ? "中文全文" : "英文全文"} · 先听音频，再对照原文
-        </p>
-        {segments.length > 0 ? (
-          <div className="mt-4" aria-live="polite">
-            <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">
-              {showChinese ? fullChineseText : fullEnglishText}
-            </p>
+      {mode === "full" ? (
+        <SurfaceCard>
+          <SectionHeader title="英文全文" />
+          <p className="mt-2 text-xs text-subtle">中文解释标签 · 共 5 段 · 约 7 分钟</p>
+          <div className="mt-4 space-y-5">
+            {segments.map((segment) => (
+              <div key={segment.id}>
+                <p className="text-[15px] leading-relaxed text-ink">{segment.englishText}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-subtle">{segment.chineseText}</p>
+              </div>
+            ))}
           </div>
-        ) : null}
-      </SurfaceCard>
+        </SurfaceCard>
+      ) : (
+        <SurfaceCard>
+          <div className="flex items-center justify-between gap-3">
+            <SectionHeader title="分段精听" />
+            <button
+              aria-pressed={showChinese}
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-pill border border-line bg-card px-3 text-xs font-semibold text-accent-red transition-colors hover:bg-warm"
+              onClick={() => setShowChinese((value) => !value)}
+              type="button"
+            >
+              {showChinese ? "显示英文" : "中文解释"}
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-subtle">第 1 段 · 先听音频，再对照原文</p>
+          {current ? (
+            <div className="mt-4" aria-live="polite">
+              <p className="text-[15px] leading-relaxed text-ink">
+                {showChinese ? current.chineseText : current.englishText}
+              </p>
+            </div>
+          ) : null}
+        </SurfaceCard>
+      )}
     </div>
   );
 }
