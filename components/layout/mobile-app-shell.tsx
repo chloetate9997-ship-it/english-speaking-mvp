@@ -14,26 +14,45 @@ function CollapsibleSection({
   title,
   children,
   defaultOpen = false,
+  collapsible = true,
+  featured = false,
 }: {
   title: string;
   children: ReactNode;
   defaultOpen?: boolean;
+  collapsible?: boolean;
+  featured?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+  const expanded = collapsible ? isOpen : true;
 
   return (
-    <div>
+    <section
+      className={cn(
+        "rounded-[18px] border border-line bg-white px-4 py-4",
+        featured ? "shadow-card" : "",
+      )}
+    >
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between text-left hover:opacity-80"
+        aria-expanded={expanded}
+        className={cn(
+          "flex w-full items-center justify-between gap-3 text-left",
+          collapsible && "hover:opacity-75",
+          !collapsible && "cursor-default",
+        )}
+        disabled={!collapsible}
+        onClick={() => collapsible && setIsOpen((value) => !value)}
+        type="button"
       >
-        <h2 className="font-semibold text-ink">{title}</h2>
-        <span className="ml-2 shrink-0 text-lg transition-transform" style={{ transform: isOpen ? "rotate(0deg)" : "rotate(0deg)" }}>
-          {isOpen ? "−" : "+"}
-        </span>
+        <h2 className={cn("font-semibold text-ink", featured && "text-[15px]")}>{title}</h2>
+        {collapsible ? (
+          <span aria-hidden className="shrink-0 text-lg leading-none text-subtle">
+            {expanded ? "−" : "+"}
+          </span>
+        ) : null}
       </button>
-      {isOpen && <div className="mt-3">{children}</div>}
-    </div>
+      {expanded ? <div className="mt-3">{children}</div> : null}
+    </section>
   );
 }
 
@@ -63,24 +82,32 @@ export function MobileAppShell({
             AI 情景口语学习
           </h1>
 
-          <div className="mt-6 space-y-6 text-sm leading-relaxed text-subtle">
+          <div className="mt-6 space-y-3 text-sm leading-relaxed text-subtle">
             {/* 第一部分：为什么做这个产品 - 默认全部展开 */}
-            <div>
-              <h2 className="font-semibold text-ink mb-3">为什么做这个产品</h2>
+            <CollapsibleSection
+              collapsible={false}
+              defaultOpen
+              featured
+              title="为什么做这个产品"
+            >
               <div className="space-y-3 text-xs">
                 <p>使用尚雯婕&quot;背诵20篇文章掌握英语&quot;的英语学习法时，我发现了四个问题：</p>
-                <ul className="list-disc list-inside space-y-1 pl-2">
-                  <li>第一个问题：材料收集需要切换工具，很繁琐</li>
-                  <li>第二个问题：精听、笔记、复述分散各处，流程断裂</li>
-                  <li>第三个问题：复述后无法获得即时反馈，效果无法衡量</li>
-                  <li>第四个问题：长文章一次性学习，初学者难以坚持</li>
+                <ul className="space-y-2">
+                  <li><strong className="text-ink">01</strong>　材料收集需要切换工具，很繁琐</li>
+                  <li><strong className="text-ink">02</strong>　精听、笔记、复述分散各处，流程断裂</li>
+                  <li><strong className="text-ink">03</strong>　复述后无法获得即时反馈，效果无法衡量</li>
+                  <li><strong className="text-ink">04</strong>　长文章一次性学习，初学者难以坚持</li>
                 </ul>
               </div>
-            </div>
+            </CollapsibleSection>
 
             {/* 第二部分：这个产品怎么解决 - 默认全部展开 */}
-            <div>
-              <h2 className="font-semibold text-ink mb-3">这个产品怎么解决</h2>
+            <CollapsibleSection
+              collapsible={false}
+              defaultOpen
+              featured
+              title="这个产品怎么解决"
+            >
               <div className="space-y-3 text-xs">
                 <div>
                   <p className="font-semibold text-ink mb-1">解决问题一：一键收藏</p>
@@ -103,7 +130,7 @@ export function MobileAppShell({
                   <p className="text-stone-600">主页 → 选择课程 → 精听学习 → 复述练习 → AI情景对话 → 掌握技能</p>
                 </div>
               </div>
-            </div>
+            </CollapsibleSection>
 
             {/* 第三部分及以后：可展开 */}
             <CollapsibleSection title="一、产品背景：为什么要做这个软件">
