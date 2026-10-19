@@ -84,7 +84,7 @@ export function MobileAppShell({
               collapsible={false}
               defaultOpen
               featured
-              title="为什么做这个产品"
+              title="为什么做这个产品，痛点是什么"
             >
               <div className="space-y-2 text-[11px] leading-[1.45]">
                 <p>使用尚雯婕&quot;背诵20篇文章掌握英语&quot;的英语学习法时，我发现了四个问题：</p>
