@@ -68,8 +68,7 @@ export function MobileAppShell({
       <div className="mx-auto flex w-full max-w-[1160px] items-start justify-center gap-10 px-0 sm:px-6 lg:px-8">
         <aside
           aria-label="项目介绍"
-          className="sticky top-10 hidden w-[400px] shrink-0 overflow-y-auto pt-6 lg:block"
-          style={{ maxHeight: "calc(100vh - 80px)" }}
+          className="sticky top-10 hidden h-[860px] w-[400px] shrink-0 overflow-y-auto pr-3 lg:block"
         >
           <p className="inline-flex items-center rounded-pill bg-white px-3 py-1 text-xs font-semibold text-brand shadow-card">
             英语口语训练 MVP
@@ -104,38 +103,39 @@ export function MobileAppShell({
               featured
               title="这个产品怎么解决"
             >
-              <div className="space-y-3 text-xs">
-                <div>
-                  <p className="font-semibold leading-relaxed text-ink">
-                    当前 MVP 已完整实现第1课，请从“全部课程”的第1课进入体验。
+              <div className="text-xs">
+                <div className="border-l-2 border-accent-red pl-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent-red">
+                    MVP 完整体验入口
+                  </p>
+                  <p className="mt-1 font-semibold leading-relaxed text-ink">
+                    在首页“全部课程”中进入第1课，体验完整学习闭环。
                   </p>
                   <Link
                     className="mt-2 inline-flex font-semibold text-accent-red hover:underline"
                     href="/lessons/lesson-01"
                   >
-                    从第1课开始体验 →
+                    直接进入第1课 →
                   </Link>
                 </div>
-                <div>
-                  <p className="font-semibold text-ink mb-1">解决问题一：一键收藏</p>
-                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 一键收藏</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-ink mb-1">解决问题二：内置笔记</p>
-                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 标注笔记 → 继续学习</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-ink mb-1">解决问题三：即时反馈</p>
-                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 复述练习 → 获得反馈</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-ink mb-1">解决问题四：分段学习</p>
-                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 分段学习 → 逐步完成</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-ink mb-1">额外价值：AI对话实战</p>
-                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 复述练习 → AI情景对话 → 掌握技能</p>
-                </div>
+
+                <ol className="mt-4 divide-y divide-line">
+                  {[
+                    ["01", "一键收藏", "第1课 → 精听学习 → 一键收藏"],
+                    ["02", "内置笔记", "第1课 → 精听学习 → 标注笔记 → 继续学习"],
+                    ["03", "即时反馈", "第1课 → 复述练习 → 获得反馈"],
+                    ["04", "分段学习", "第1课 → 分段学习 → 逐步完成"],
+                    ["05", "AI 对话实战", "第1课 → 精听 → 复述 → AI 情景对话"],
+                  ].map(([number, title, path]) => (
+                    <li className="grid grid-cols-[28px_1fr] gap-2 py-2.5" key={number}>
+                      <span className="font-semibold text-subtle">{number}</span>
+                      <div>
+                        <p className="font-semibold text-ink">{title}</p>
+                        <p className="mt-0.5 leading-relaxed text-stone-600">{path}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
               </div>
             </CollapsibleSection>
 
@@ -202,22 +202,6 @@ export function MobileAppShell({
             </CollapsibleSection>
           </div>
 
-          <ul className="mt-6 space-y-3">
-            {[
-              ["课程精听", "分段听力与重点表达标注，打好输入基础。"],
-              ["复述练习", "录音复述并获得 AI 反馈，纠正语法与自然度。"],
-              ["AI 情景对话", "Agent 动态提示与课程 RAG，多轮练到能脱口而出。"],
-            ].map(([title, desc]) => (
-              <li className="rounded-lg bg-white p-4 shadow-card" key={title}>
-                <p className="text-sm font-semibold text-ink">{title}</p>
-                <p className="mt-1 text-xs leading-relaxed text-subtle">{desc}</p>
-              </li>
-            ))}
-          </ul>
-
-          <p className="mt-5 rounded-lg border border-line bg-warm p-3 text-xs leading-relaxed text-ink">
-            建议使用手机浏览器体验录音功能，桌面端主要用于浏览与演示。
-          </p>
         </aside>
         <div className="w-full max-w-[430px] shrink-0 overflow-hidden bg-canvas sm:rounded-[28px] sm:border sm:border-line sm:shadow-[0_24px_64px_rgba(23,20,18,0.12)]">
           <div
