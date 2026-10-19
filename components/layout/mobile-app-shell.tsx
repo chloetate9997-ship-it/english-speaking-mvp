@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface MobileAppShellProps {
@@ -105,24 +106,35 @@ export function MobileAppShell({
             >
               <div className="space-y-3 text-xs">
                 <div>
+                  <p className="font-semibold leading-relaxed text-ink">
+                    当前 MVP 已完整实现第1课，请从“全部课程”的第1课进入体验。
+                  </p>
+                  <Link
+                    className="mt-2 inline-flex font-semibold text-accent-red hover:underline"
+                    href="/lessons/lesson-01"
+                  >
+                    从第1课开始体验 →
+                  </Link>
+                </div>
+                <div>
                   <p className="font-semibold text-ink mb-1">解决问题一：一键收藏</p>
-                  <p className="text-stone-600">主页 → 选择课程 → 精听学习 → 一键收藏</p>
+                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 一键收藏</p>
                 </div>
                 <div>
                   <p className="font-semibold text-ink mb-1">解决问题二：内置笔记</p>
-                  <p className="text-stone-600">主页 → 选择课程 → 精听学习 → 标注笔记 → 继续学习</p>
+                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 标注笔记 → 继续学习</p>
                 </div>
                 <div>
                   <p className="font-semibold text-ink mb-1">解决问题三：即时反馈</p>
-                  <p className="text-stone-600">主页 → 选择课程 → 精听学习 → 复述练习 → 获得反馈</p>
+                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 复述练习 → 获得反馈</p>
                 </div>
                 <div>
                   <p className="font-semibold text-ink mb-1">解决问题四：分段学习</p>
-                  <p className="text-stone-600">主页 → 选择课程 → 分段学习 → 逐步完成</p>
+                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 分段学习 → 逐步完成</p>
                 </div>
                 <div>
                   <p className="font-semibold text-ink mb-1">额外价值：AI对话实战</p>
-                  <p className="text-stone-600">主页 → 选择课程 → 精听学习 → 复述练习 → AI情景对话 → 掌握技能</p>
+                  <p className="text-stone-600">首页 → 全部课程 → 第1课 → 精听学习 → 复述练习 → AI情景对话 → 掌握技能</p>
                 </div>
               </div>
             </CollapsibleSection>
