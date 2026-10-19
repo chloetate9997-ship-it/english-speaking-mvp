@@ -74,7 +74,7 @@ export function MobileAppShell({
             英语口语训练 MVP
           </p>
           <h1 className="mt-4 text-2xl font-bold leading-tight text-ink">
-            AI 情景口语学习
+            英语口语学习程序 MVP
           </h1>
 
           <div className="mt-6 space-y-5 text-sm leading-relaxed text-subtle">
