@@ -28,11 +28,16 @@ function CollapsibleSection({
   const expanded = collapsible ? isOpen : true;
 
   return (
-    <section className="border-b border-line pb-5 last:border-b-0">
+    <section
+      className={cn(
+        "border-b border-line last:border-b-0",
+        featured ? "pb-3" : "pb-2.5",
+      )}
+    >
       <button
         aria-expanded={expanded}
         className={cn(
-          "flex w-full items-center justify-between gap-3 py-1 text-left",
+          "flex w-full items-center justify-between gap-3 text-left",
           collapsible && "hover:opacity-75",
           !collapsible && "cursor-default",
         )}
@@ -40,14 +45,14 @@ function CollapsibleSection({
         onClick={() => collapsible && setIsOpen((value) => !value)}
         type="button"
       >
-        <h2 className={cn("font-semibold text-ink", featured && "text-[15px]")}>{title}</h2>
+        <h2 className={cn("font-semibold text-ink", featured ? "text-sm" : "text-[13px]")}>{title}</h2>
         {collapsible ? (
           <span aria-hidden className="shrink-0 text-lg leading-none text-subtle">
             {expanded ? "−" : "+"}
           </span>
         ) : null}
       </button>
-      {expanded ? <div className="mt-3">{children}</div> : null}
+      {expanded ? <div className="mt-2">{children}</div> : null}
     </section>
   );
 }
@@ -68,16 +73,16 @@ export function MobileAppShell({
       <div className="mx-auto flex w-full max-w-[1160px] items-start justify-center gap-10 px-0 sm:px-6 lg:px-8">
         <aside
           aria-label="项目介绍"
-          className="sticky top-10 hidden h-[860px] w-[400px] shrink-0 overflow-y-auto pr-3 lg:block"
+          className="sticky top-10 hidden min-h-[860px] w-[400px] shrink-0 pr-2 lg:block"
         >
           <p className="inline-flex items-center rounded-pill bg-white px-3 py-1 text-xs font-semibold text-brand shadow-card">
             英语口语训练 MVP
           </p>
-          <h1 className="mt-4 text-2xl font-bold leading-tight text-ink">
+          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
             英语口语学习程序 MVP
           </h1>
 
-          <div className="mt-6 space-y-5 text-sm leading-relaxed text-subtle">
+          <div className="mt-4 space-y-3 text-sm leading-snug text-subtle">
             {/* 第一部分：为什么做这个产品 - 默认全部展开 */}
             <CollapsibleSection
               collapsible={false}
@@ -85,9 +90,9 @@ export function MobileAppShell({
               featured
               title="为什么做这个产品"
             >
-              <div className="space-y-3 text-xs">
+              <div className="space-y-2 text-[11px] leading-[1.45]">
                 <p>使用尚雯婕&quot;背诵20篇文章掌握英语&quot;的英语学习法时，我发现了四个问题：</p>
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                   <li><strong className="text-ink">01</strong>　材料收集需要切换工具，很繁琐</li>
                   <li><strong className="text-ink">02</strong>　精听、笔记、复述分散各处，流程断裂</li>
                   <li><strong className="text-ink">03</strong>　复述后无法获得即时反馈，效果无法衡量</li>
@@ -103,23 +108,23 @@ export function MobileAppShell({
               featured
               title="这个产品怎么解决"
             >
-              <div className="text-xs">
+              <div className="text-[11px] leading-[1.45]">
                 <div className="border-l-2 border-accent-red pl-3">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent-red">
                     MVP 完整体验入口
                   </p>
-                  <p className="mt-1 font-semibold leading-relaxed text-ink">
+                  <p className="mt-1 font-semibold text-ink">
                     在首页“全部课程”中进入第1课，体验完整学习闭环。
                   </p>
                   <Link
-                    className="mt-2 inline-flex font-semibold text-accent-red hover:underline"
+                    className="mt-1.5 inline-flex font-semibold text-accent-red hover:underline"
                     href="/lessons/lesson-01"
                   >
                     直接进入第1课 →
                   </Link>
                 </div>
 
-                <ol className="mt-4 divide-y divide-line">
+                <ol className="mt-2.5 divide-y divide-line">
                   {[
                     ["01", "一键收藏", "第1课 → 精听学习 → 一键收藏"],
                     ["02", "内置笔记", "第1课 → 精听学习 → 标注笔记 → 继续学习"],
@@ -127,11 +132,11 @@ export function MobileAppShell({
                     ["04", "分段学习", "第1课 → 分段学习 → 逐步完成"],
                     ["05", "AI 对话实战", "第1课 → 精听 → 复述 → AI 情景对话"],
                   ].map(([number, title, path]) => (
-                    <li className="grid grid-cols-[28px_1fr] gap-2 py-2.5" key={number}>
+                    <li className="grid grid-cols-[24px_1fr] gap-1.5 py-1.5" key={number}>
                       <span className="font-semibold text-subtle">{number}</span>
                       <div>
                         <p className="font-semibold text-ink">{title}</p>
-                        <p className="mt-0.5 leading-relaxed text-stone-600">{path}</p>
+                        <p className="text-stone-600">{path}</p>
                       </div>
                     </li>
                   ))}
