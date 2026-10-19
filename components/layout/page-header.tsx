@@ -6,11 +6,12 @@ import { cn } from "@/lib/utils";
 interface PageHeaderProps {
   title: string;
   backHref?: string;
+  backAction?: ReactNode;
   action?: ReactNode;
   className?: string;
 }
 
-export function PageHeader({ title, backHref, action, className }: PageHeaderProps) {
+export function PageHeader({ title, backHref, backAction, action, className }: PageHeaderProps) {
   return (
     <header
       className={cn(
@@ -19,7 +20,7 @@ export function PageHeader({ title, backHref, action, className }: PageHeaderPro
       )}
     >
       <div>
-        {backHref ? (
+        {backAction ?? (backHref ? (
           <Link
             aria-label="返回"
             className="inline-flex size-10 items-center justify-center rounded-full text-ink hover:bg-muted"
@@ -27,7 +28,7 @@ export function PageHeader({ title, backHref, action, className }: PageHeaderPro
           >
             <ArrowLeft aria-hidden className="size-5" />
           </Link>
-        ) : null}
+        ) : null)}
       </div>
       <h1 className="truncate text-center text-[20px] font-bold leading-[27px] tracking-tight text-ink">{title}</h1>
       <div className="flex justify-end">{action}</div>

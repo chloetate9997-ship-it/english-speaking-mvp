@@ -10,6 +10,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { FeedbackSection } from "@/components/feedback/feedback-section";
 import { PrimaryAction } from "@/components/ui/primary-action";
 import { CoachRecorder } from "@/components/coach/coach-recorder";
+import { HistoryBackButton } from "@/components/navigation/history-back-button";
 import {
   COACH_SCENARIOS,
   getCoachScenario,
@@ -234,7 +235,10 @@ export function CoachExperience({ lessonId }: CoachExperienceProps) {
   if (!isSupabaseConfigured) {
     return (
       <MobileAppShell>
-        <PageHeader backHref={`/lessons/${lessonId}`} title="AI 情景口语教练" />
+        <PageHeader
+          backAction={<HistoryBackButton fallbackHref={`/lessons/${lessonId}`} />}
+          title="AI 情景口语教练"
+        />
         <main className="space-y-5 px-page pb-10 pt-2">
           <SurfaceCard className="bg-warm">
             <p className="text-sm text-ink">云端功能未配置，AI 情景练习需连接 Supabase 与 OpenAI。</p>
@@ -246,7 +250,10 @@ export function CoachExperience({ lessonId }: CoachExperienceProps) {
 
   return (
     <MobileAppShell>
-      <PageHeader backHref={`/lessons/${lessonId}`} title="AI 情景口语教练" />
+      <PageHeader
+        backAction={<HistoryBackButton fallbackHref={`/lessons/${lessonId}`} />}
+        title="AI 情景口语教练"
+      />
       <main className="space-y-5 px-page pb-10 pt-4">
 
         {state.phase === "scenario" ? (
