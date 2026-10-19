@@ -27,16 +27,11 @@ function CollapsibleSection({
   const expanded = collapsible ? isOpen : true;
 
   return (
-    <section
-      className={cn(
-        "rounded-[18px] border border-line bg-white px-4 py-4",
-        featured ? "shadow-card" : "",
-      )}
-    >
+    <section className="border-b border-line pb-5 last:border-b-0">
       <button
         aria-expanded={expanded}
         className={cn(
-          "flex w-full items-center justify-between gap-3 text-left",
+          "flex w-full items-center justify-between gap-3 py-1 text-left",
           collapsible && "hover:opacity-75",
           !collapsible && "cursor-default",
         )}
@@ -82,7 +77,7 @@ export function MobileAppShell({
             AI 情景口语学习
           </h1>
 
-          <div className="mt-6 space-y-3 text-sm leading-relaxed text-subtle">
+          <div className="mt-6 space-y-5 text-sm leading-relaxed text-subtle">
             {/* 第一部分：为什么做这个产品 - 默认全部展开 */}
             <CollapsibleSection
               collapsible={false}
