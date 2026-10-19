@@ -74,10 +74,7 @@ export function MobileAppShell({
           aria-label="项目介绍"
           className="sticky top-10 hidden min-h-[860px] w-[400px] shrink-0 pr-2 lg:block"
         >
-          <p className="inline-flex items-center rounded-pill bg-white px-3 py-1 text-xs font-semibold text-brand shadow-card">
-            英语口语训练 MVP
-          </p>
-          <h1 className="mt-3 text-2xl font-bold leading-tight text-ink">
+          <h1 className="text-2xl font-bold leading-tight text-ink">
             英语口语学习程序 MVP
           </h1>
 
