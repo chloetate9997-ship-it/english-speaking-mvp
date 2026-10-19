@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface MobileAppShellProps {
@@ -106,31 +105,20 @@ export function MobileAppShell({
               collapsible={false}
               defaultOpen
               featured
-              title="这个产品怎么解决"
+              title="这个产品怎么解决以上问题"
             >
               <div className="text-[11px] leading-[1.45]">
-                <div className="border-l-2 border-accent-red pl-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent-red">
-                    MVP 完整体验入口
-                  </p>
-                  <p className="mt-1 font-semibold text-ink">
-                    在首页“全部课程”中进入第1课，体验完整学习闭环。
-                  </p>
-                  <Link
-                    className="mt-1.5 inline-flex font-semibold text-accent-red hover:underline"
-                    href="/lessons/lesson-01"
-                  >
-                    直接进入第1课 →
-                  </Link>
-                </div>
+                <p className="text-stone-600">
+                  当前完整 MVP 请从首页“全部课程”的第1课进入体验。
+                </p>
 
                 <ol className="mt-2.5 divide-y divide-line">
                   {[
-                    ["01", "一键收藏", "第1课 → 精听学习 → 一键收藏"],
-                    ["02", "内置笔记", "第1课 → 精听学习 → 标注笔记 → 继续学习"],
-                    ["03", "即时反馈", "第1课 → 复述练习 → 获得反馈"],
-                    ["04", "分段学习", "第1课 → 分段学习 → 逐步完成"],
-                    ["05", "AI 对话实战", "第1课 → 精听 → 复述 → AI 情景对话"],
+                    ["01", "解决问题一：一键收藏", "主页 → 选择课程 → 精听学习 → 一键收藏"],
+                    ["02", "解决问题二：内置笔记", "主页 → 选择课程 → 精听学习 → 标注笔记 → 继续学习"],
+                    ["03", "解决问题三：即时反馈", "主页 → 选择课程 → 精听学习 → 复述练习 → 获得反馈"],
+                    ["04", "解决问题四：分段学习", "主页 → 选择课程 → 分段学习 → 逐步完成"],
+                    ["05", "额外价值：AI 对话实战", "主页 → 选择课程 → 精听学习 → 复述练习 → AI 情景对话 → 掌握技能"],
                   ].map(([number, title, path]) => (
                     <li className="grid grid-cols-[24px_1fr] gap-1.5 py-1.5" key={number}>
                       <span className="font-semibold text-subtle">{number}</span>
