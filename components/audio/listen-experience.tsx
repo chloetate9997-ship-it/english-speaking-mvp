@@ -7,8 +7,6 @@ import { Pause, Play, Plus, Volume2 } from "lucide-react";
 import type { LessonSegment, PhraseNote } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import { SectionHeader } from "@/components/ui/section-header";
-import { SurfaceCard } from "@/components/ui/surface-card";
 import { saveProgress } from "@/lib/data/progress";
 
 type ListenMode = "full" | "segment";
@@ -31,6 +29,8 @@ interface ListenExperienceProps {
   lessonId: string;
   phraseNotes?: PhraseNote[];
   segments: LessonSegment[];
+  transcript?: string[];
+  transcriptChinese?: string[];
   durationSeconds: number;
 }
 
@@ -39,6 +39,8 @@ export function ListenExperience({
   lessonId,
   phraseNotes = [],
   segments,
+  transcript = [],
+  transcriptChinese = [],
   durationSeconds,
 }: ListenExperienceProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -281,11 +283,13 @@ export function ListenExperience({
         />
       </section>
 
-      {mode === "full" ? (
+      {mode === "full" || mode === "segment" ? (
         <section className="bg-card text-ink">
           <div className="flex items-center justify-between gap-3 border-b border-line pb-2">
             <div className="flex min-w-0 items-center gap-3">
-              <h2 className="text-lg font-bold text-ink">英文全文</h2>
+              <h2 className="text-lg font-bold text-ink">
+                {mode === "full" ? "英文全文" : "段落全文"}
+              </h2>
               <button
                 aria-pressed={showChinese}
                 className="shrink-0 rounded-pill border border-line px-2.5 py-1 text-[11px] font-medium text-subtle transition-colors hover:text-ink"
@@ -295,12 +299,19 @@ export function ListenExperience({
                 {showChinese ? "隐藏解释" : "中文解释"}
               </button>
             </div>
-            <Link
-              className="shrink-0 text-[11px] font-medium text-ink"
-              href={`/lessons/${lessonId}/notes`}
-            >
-              我的笔记 ›
-            </Link>
+            <div className="flex shrink-0 items-center gap-3">
+              {mode === "segment" ? (
+                <button className="text-[11px] text-subtle" type="button">
+                  自定义段落 ›
+                </button>
+              ) : null}
+              <Link
+                className="text-[11px] font-medium text-ink"
+                href={`/lessons/${lessonId}/notes`}
+              >
+                我的笔记 ›
+              </Link>
+            </div>
           </div>
           <div
             className="relative mt-4 space-y-4"
@@ -308,12 +319,12 @@ export function ListenExperience({
             onTouchEnd={() => window.setTimeout(captureTextSelection, 0)}
             ref={transcriptRef}
           >
-            {segments.map((segment) => (
-              <div key={segment.id}>
-                <p className="text-[13px] leading-[1.5] text-ink">{segment.englishText}</p>
+            {(transcript.length > 0 ? transcript : segments.map((segment) => segment.englishText)).map((paragraph, index) => (
+              <div key={`${index}-${paragraph.slice(0, 12)}`}>
+                <p className="whitespace-pre-line text-[13px] leading-[1.5] text-ink">{paragraph}</p>
                 {showChinese ? (
                   <p className="mt-1 text-[13px] leading-[1.5] text-subtle">
-                    {segment.chineseText}
+                    {transcriptChinese[index] ?? segments[index]?.chineseText}
                   </p>
                 ) : null}
               </div>
@@ -367,29 +378,7 @@ export function ListenExperience({
             ) : null}
           </div>
         </section>
-      ) : (
-        <SurfaceCard>
-          <div className="flex items-center justify-between gap-3">
-            <SectionHeader title="分段精听" />
-            <button
-              aria-pressed={showChinese}
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-pill border border-line bg-card px-3 text-xs font-semibold text-accent-red transition-colors hover:bg-warm"
-              onClick={() => setShowChinese((value) => !value)}
-              type="button"
-            >
-              {showChinese ? "显示英文" : "中文解释"}
-            </button>
-          </div>
-          <p className="mt-2 text-xs text-subtle">第 1 段 · 先听音频，再对照原文</p>
-          {current ? (
-            <div className="mt-4" aria-live="polite">
-              <p className="text-[15px] leading-relaxed text-ink">
-                {showChinese ? current.chineseText : current.englishText}
-              </p>
-            </div>
-          ) : null}
-        </SurfaceCard>
-      )}
+      ) : null}
     </div>
   );
 }

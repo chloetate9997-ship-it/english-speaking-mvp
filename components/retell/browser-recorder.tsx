@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AudioWaveform, Mic, RotateCcw, Square, X } from "lucide-react";
+import { AudioWaveform, RotateCcw, Square, X } from "lucide-react";
 import { PrimaryAction } from "@/components/ui/primary-action";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { saveProgress } from "@/lib/data/progress";
@@ -341,17 +341,18 @@ export function BrowserRecorder({ lessonId }: BrowserRecorderProps) {
   return (
     <section
       aria-label="录音准备"
-      className="flex flex-col items-center rounded-lg bg-card px-5 py-8 text-center shadow-card"
+      className="flex min-h-[164px] flex-col items-center justify-center rounded-[18px] border border-line bg-card px-5 py-6 text-center shadow-card"
     >
-      <span className="flex size-16 items-center justify-center rounded-full bg-play text-ink">
-        <AudioWaveform aria-hidden className="size-7" />
-      </span>
-      <p className="mt-4 text-sm font-semibold text-ink">准备好后点击开始录音</p>
-      <p className="mt-1 text-xs text-subtle">建议用 1 分钟左右复述 5 段要点</p>
-      <PrimaryAction className="mt-5 max-w-[240px]" onClick={() => void startRecording()}>
-        <Mic aria-hidden className="mr-2 size-4" />
-        开始录音
-      </PrimaryAction>
+      <button
+        aria-label="开始复述录音"
+        className="flex size-16 items-center justify-center rounded-full border-2 border-white bg-play text-white shadow-card"
+        onClick={() => void startRecording()}
+        type="button"
+      >
+        <AudioWaveform aria-hidden className="size-8" />
+      </button>
+      <p className="mt-3 text-sm font-semibold text-ink">点击开始复述</p>
+      <p className="mt-1 text-[11px] text-subtle">说完后再次点击结束</p>
       {state === "error" && errorMessage ? (
         <p role="alert" className="mt-4 w-full rounded-lg bg-warm p-3 text-xs leading-relaxed text-ink">
           {errorMessage}

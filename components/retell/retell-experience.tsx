@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import type { LessonSegment } from "@/lib/types";
 import { CustomSegmentSelector } from "@/components/audio/custom-segment-selector";
-import { RetellPromptCard } from "@/components/retell/retell-prompt-card";
 import { BrowserRecorder } from "@/components/retell/browser-recorder";
-import { NoteRow } from "@/components/notes/note-row";
 import { cn } from "@/lib/utils";
 
 type RetellScope = "full" | "segment";
@@ -28,10 +25,6 @@ export function RetellExperience({ lessonId, segments, prompt }: RetellExperienc
   const selectedSegments = segments.filter((segment) =>
     selectedIds.includes(segment.id),
   );
-  const scopeLabel =
-    scope === "full"
-      ? "整篇复述 · 中文提示"
-      : `分段复述 · 已选择 ${selectedSegments.length} 段`;
   const combinedPrompt =
     scope === "full"
       ? prompt
@@ -60,64 +53,47 @@ export function RetellExperience({ lessonId, segments, prompt }: RetellExperienc
 
   return (
     <div className="space-y-5">
-      <div className="flex gap-2" role="group" aria-label="复述范围">
-        <button
-          aria-pressed={scope === "full"}
-          className={cn(
-            "flex h-9 flex-1 items-center justify-center rounded-pill text-sm font-medium",
-            scope === "full" ? "bg-ink text-white" : "bg-segment text-subtle",
-          )}
-          onClick={() => setScope("full")}
-          type="button"
-        >
-          整篇
-        </button>
-        <button
-          aria-pressed={scope === "segment"}
-          className={cn(
-            "flex h-9 flex-1 items-center justify-center rounded-pill text-sm font-medium",
-            scope === "segment" ? "bg-ink text-white" : "bg-segment text-subtle",
-          )}
-          onClick={() => setSelecting(true)}
-          type="button"
-        >
-          分段
-        </button>
-      </div>
-
-      <RetellPromptCard prompt={combinedPrompt} scopeLabel={scopeLabel} />
-      {scope === "segment" ? (
-        <button
-          className="inline-flex items-center gap-0.5 text-xs font-semibold text-accent-red"
-          onClick={() => setSelecting(true)}
-          type="button"
-        >
-          重新选择片段
-          <ChevronRight aria-hidden className="size-3.5" />
-        </button>
-      ) : null}
+      <section className="rounded-[18px] border border-line bg-card p-4 shadow-card">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex rounded-pill bg-segment p-0.5" role="group" aria-label="复述范围">
+            <button
+              aria-pressed={scope === "full"}
+              className={cn(
+                "min-w-[68px] rounded-pill px-3 py-1.5 text-xs",
+                scope === "full" ? "bg-white font-semibold text-ink shadow-card" : "text-subtle",
+              )}
+              onClick={() => setScope("full")}
+              type="button"
+            >
+              全篇
+            </button>
+            <button
+              aria-pressed={scope === "segment"}
+              className={cn(
+                "min-w-[58px] rounded-pill px-3 py-1.5 text-xs",
+                scope === "segment" ? "bg-white font-semibold text-ink shadow-card" : "text-subtle",
+              )}
+              onClick={() => setSelecting(true)}
+              type="button"
+            >
+              分段
+            </button>
+          </div>
+          <Link className="text-[11px] text-ink" href={`/lessons/${lessonId}/notes`}>
+            我的笔记 ›
+          </Link>
+        </div>
+        <p className="mt-8 text-sm leading-[1.8] text-subtle">{combinedPrompt}</p>
+      </section>
 
       <BrowserRecorder lessonId={lessonId} />
 
       <Link
-        className="block text-center text-sm font-semibold text-accent-red"
+        className="mx-auto flex h-[52px] w-[235px] items-center justify-center rounded-button bg-ink text-sm font-semibold text-white shadow-card"
         href={`/lessons/${lessonId}/result/demo-result`}
       >
-        查看演示结果
+        复述对比结果 →
       </Link>
-      <div className="space-y-3">
-        <NoteRow
-          href={`/lessons/${lessonId}/notes`}
-          meta="4 条表达 · 随时复习"
-          title="本篇笔记"
-        />
-        <NoteRow
-          href="/history"
-          icon={<ChevronRight aria-hidden className="size-5" />}
-          meta="按文章查看我的笔记"
-          title="历史记录"
-        />
-      </div>
     </div>
   );
 }

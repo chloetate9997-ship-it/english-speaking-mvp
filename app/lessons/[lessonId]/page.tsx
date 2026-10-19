@@ -7,7 +7,13 @@ import { ListenExperience } from "@/components/audio/listen-experience";
 import { SectionHeader } from "@/components/ui/section-header";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { EmptyState } from "@/components/ui/app-states";
-import { getLessonSummary, lesson01, lesson01Notes } from "@/lib/mock-data/lessons";
+import {
+  getLessonSummary,
+  lesson01,
+  lesson01Notes,
+  lesson01Transcript,
+  lesson01TranscriptChinese,
+} from "@/lib/mock-data/lessons";
 
 interface ListenPageProps {
   params: Promise<{ lessonId: string }>;
@@ -64,6 +70,8 @@ export default async function ListenPage({ params }: ListenPageProps) {
           durationSeconds={lesson01.durationSeconds}
           phraseNotes={lesson01Notes}
           segments={lesson01.segments}
+          transcript={lesson01Transcript}
+          transcriptChinese={lesson01TranscriptChinese}
         />
         <SurfaceCard>
           <SectionHeader title="AI 情景口语教练" />

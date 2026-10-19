@@ -15,6 +15,30 @@ export const lesson01: Lesson = { id: "lesson-01", order: 1, title: "How to Expr
   { id: "segment-04", lessonId: "lesson-01", order: 4, englishText: "You can respond politely by acknowledging the other opinion before explaining your reason.", chineseText: "你可以先认可对方的观点，再解释自己的理由。", startSeconds: 250, endSeconds: 340, keywords: ["respond politely", "acknowledge", "reason"] },
   { id: "segment-05", lessonId: "lesson-01", order: 5, englishText: "Useful phrases include I think, I believe, in my opinion, and I would say.", chineseText: "常用表达包括我认为、我相信、在我看来以及我会说。", startSeconds: 340, endSeconds: 435, keywords: ["I think", "I believe", "in my opinion"] },
 ] };
+
+export const lesson01Transcript = [
+  "Suppose you are with a group of friends discussing the greatest inventions of the 20th century.",
+  "One friend says, \"I think the computer was the best invention. There's no question about it.\"",
+  "Another friend says, \"I disagree! Have you forgotten that airplanes exist?\"",
+  "The first one responds with, \"Actually, today's airplanes could not operate without computers.\"",
+  "Knowing how to express your opinion in English is valuable whether you are speaking or writing. In today's program we will look at phrases you can use to share your point of view.",
+  "COMMON PHRASES",
+  "Many phrases are suitable in everyday speech and some types of writing, such as on blogs and personal websites. You have probably already seen or used some of these phrases:",
+  "I think…\nI believe…\nI feel…\nIn my opinion…\nI would say…",
+  "For example, imagine you have your own food website. Today you're writing or talking about the world's best street food. You might say: In my opinion, the best street food combines fresh ingredients, strong flavors and local traditions.",
+];
+
+export const lesson01TranscriptChinese = [
+  "假设你正和一群朋友讨论二十世纪最伟大的发明。",
+  "一位朋友说：\“我认为电脑是最伟大的发明，这一点毫无疑问。\”",
+  "另一位朋友说：\“我不同意！你忘了飞机的存在吗？\”",
+  "第一位朋友回应：\“事实上，如今的飞机没有电脑就无法运行。\”",
+  "无论口头还是书面交流，学会用英语表达观点都很有价值。本课将介绍一些分享个人观点的常用表达。",
+  "常用表达",
+  "许多表达适合日常交流，也适合博客和个人网站等写作场景。你可能已经见过或使用过这些表达：",
+  "我认为……\n我相信……\n我觉得……\n在我看来……\n我会说……",
+  "例如，假设你有一个美食网站，正在介绍世界上最棒的街头美食。你可以说：在我看来，最好的街头美食融合了新鲜食材、浓郁风味和当地传统。",
+];
 export const demoNote: Note = { id: "note-01", lessonId: "lesson-01", segmentId: "segment-04", content: "回应不同意见时，先表示理解，再给出自己的理由。", createdAt: "2026-10-15T09:00:00+08:00", updatedAt: "2026-10-15T09:00:00+08:00" };
 export const demoRetellResult: RetellResult = { id: "demo-result", lessonId: "lesson-01", createdAt: "2026-10-15T09:10:00+08:00", scope: "full", selectedSegmentIds: lesson01.segments.map((segment) => segment.id), transcript: "In my opinion, computers were one of the most important inventions because modern airplanes also depend on them.", contentScore: 82, coveredPoints: ["表达了个人观点", "提到了电脑的重要性", "用飞机作为补充理由"], missedPoints: ["可以更礼貌地回应另一位朋友的观点"], languageSuggestions: ["使用 I see your point, but... 来衔接不同意见"], naturalVersion: "I see your point about airplanes, but in my opinion computers were the greater invention because modern aircraft could not operate without them.", nextExercise: "再次复述，并至少使用一次 I see your point, but...。" };
 
