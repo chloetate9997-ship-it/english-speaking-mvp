@@ -21,21 +21,74 @@ export function MobileAppShell({
   return (
     <div className="min-h-dvh w-full bg-canvas text-ink sm:bg-[#f1efe9] sm:py-6 lg:py-10">
       <div className="mx-auto flex w-full max-w-[1160px] items-start justify-center gap-10 px-0 sm:px-6 lg:px-8">
-        <aside
+                <aside
           aria-label="项目介绍"
-          className="sticky top-10 hidden w-[400px] shrink-0 pt-6 lg:block"
+          className="sticky top-10 hidden w-[400px] shrink-0 overflow-y-auto pt-6 lg:block"
+          style={{ maxHeight: "calc(100vh - 80px)" }}
         >
           <p className="inline-flex items-center rounded-pill bg-white px-3 py-1 text-xs font-semibold text-brand shadow-card">
             英语口语训练 MVP
           </p>
-          <h1 className="mt-4 text-3xl font-bold leading-tight text-ink">
+          <h1 className="mt-4 text-2xl font-bold leading-tight text-ink">
             AI 情景口语学习
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-subtle">
-            课程精听、复述练习、AI 情景对话：跟着课程学表达，用 Agent 动态提示练开口，课程
-            RAG 为每一轮反馈提供依据。
-          </p>
-          <ul className="mt-5 space-y-3">
+
+          <div className="mt-6 space-y-5 text-sm leading-relaxed text-subtle">
+            <div>
+              <h2 className="font-semibold text-ink">一、产品背景：为什么要做这个软件</h2>
+              <p className="mt-2">
+                尚雯婕学习法在网上引发广泛讨论，说明&quot;如何更高效地练口语&quot;是许多学习者关注的痛点。这表明市场上确实有这样的需求。我亲自尝试这套学习方法后，觉得分段背诵和反复复述对口语提升是有效的，这激发了我把它产品化的想法。
+              </p>
+            </div>
+
+            <div>
+              <h2 className="font-semibold text-ink">二、用户痛点：我在使用过程中发现的问题</h2>
+              <ul className="mt-2 space-y-3 text-xs list-disc pl-4">
+                <li>
+                  <strong>材料收集繁琐：</strong>需要在小红书、官网等多个平台寻找合适的文章和音频，下载和整理成本高。
+                </li>
+                <li>
+                  <strong>学习流程被打断：</strong>遇到不会的单词或短语，需要离开文章去查，再手动记到错题本，频繁的页面跳转打断学习连贯性。
+                </li>
+                <li>
+                  <strong>无法确认复述效果：</strong>虽然能流畅地背诵文章，但不知道自己的发音和表达是否正确，只能凭感觉判断。
+                </li>
+                <li>
+                  <strong>长文章对初学者有门槛：</strong>整篇 10-20 分钟的文章对口语基础较弱的学习者来说起点较高。
+                </li>
+                <li>
+                  <strong>背诵不等于能交流：</strong>学完文章后缺少在真实场景中使用所学表达的机会。
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="font-semibold text-ink">三、解决方案：我在小程序中的使用流程</h2>
+              <p className="mt-2 text-xs">
+                用户打开应用后，按照以下流程顺畅地完成学习，无需在多个工具间切换：
+              </p>
+              <ul className="mt-2 space-y-2 text-xs list-disc pl-4">
+                <li><strong>第一步：选择课程</strong> 首页展示&quot;学完 20 篇，开口说英语&quot;的核心目标，用户直接从课程列表选择要学习的文章。</li>
+                <li><strong>第二步：精听学习</strong> 进入课程后，用户可以听音频、查看文章，按段落分步骤学习，降低长文章的学习难度。</li>
+                <li><strong>第三步：记录生词和短语</strong> 学习过程中遇到不熟悉的词句，用户可以直接查看解释并加入&quot;我的笔记&quot;，不用切换到外部工具，后续可随时复习。</li>
+                <li><strong>第四步：复述检验</strong> 完成精听和理解后，用户进入复述环节，用自己的语言重新表达学过的内容，并对照参考答案，检验自己是否真正掌握。</li>
+                <li><strong>第五步：AI 情景对话</strong> 学完文章后，用户进入与课程主题相关的 AI 对话场景，把刚学到的表达放到具体生活场景中练习，实现从学习到应用的转化。</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="font-semibold text-ink">四、市场机会：为什么这个软件有市场</h2>
+              <ul className="mt-2 space-y-2 text-xs list-disc pl-4">
+                <li><strong>需求真实存在：</strong>尚雯婕学习法的广泛讨论证明用户关注口语提升，也说明现有学习方式还不够高效和便利。</li>
+                <li><strong>痛点是普遍的：</strong>材料收集困难、学习被打断、缺少反馈，不只是个人问题，是这套学习方法的使用者都会遇到的共性问题。</li>
+                <li><strong>解决方案有价值：</strong>把分散的学习动作整合到一个应用内，减少页面跳转，让学习路径更连贯，这直接改善了用户体验。</li>
+                <li><strong>学习效果可验证：</strong>通过复述、反馈和 AI 交互，用户能看到自己的学习成果，增强学习动力。</li>
+                <li><strong>市场还在成长：</strong>对标尚雯婕等英语学习方法的热度，这个赛道的用户需求仍在增长。</li>
+              </ul>
+            </div>
+          </div>
+
+          <ul className="mt-6 space-y-3">
             {[
               ["课程精听", "分段听力与重点表达标注，打好输入基础。"],
               ["复述练习", "录音复述并获得 AI 反馈，纠正语法与自然度。"],
@@ -47,6 +100,7 @@ export function MobileAppShell({
               </li>
             ))}
           </ul>
+
           <p className="mt-5 rounded-lg border border-line bg-warm p-3 text-xs leading-relaxed text-ink">
             建议使用手机浏览器体验录音功能，桌面端主要用于浏览与演示。
           </p>
