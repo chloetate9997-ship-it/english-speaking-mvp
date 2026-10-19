@@ -7,6 +7,7 @@ import { Pause, Play, Plus, Volume2 } from "lucide-react";
 import type { LessonSegment, PhraseNote } from "@/lib/types";
 import { formatClock } from "@/lib/mock-data/lessons";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { CustomSegmentSelector } from "@/components/audio/custom-segment-selector";
 import { saveProgress } from "@/lib/data/progress";
 
 type ListenMode = "full" | "segment";
@@ -58,10 +59,22 @@ export function ListenExperience({
   const [selectedExplanation, setSelectedExplanation] = useState("");
   const [selectionPosition, setSelectionPosition] = useState({ left: 0, top: 0 });
   const [noteSaved, setNoteSaved] = useState(false);
+  const [selectingSegments, setSelectingSegments] = useState(false);
+  const [selectedSegmentIds, setSelectedSegmentIds] = useState<string[]>(() =>
+    segments[0] ? [segments[0].id] : [],
+  );
 
-  const current = segments[0];
-  const rangeMin = mode === "segment" && current ? current.startSeconds : 0;
-  const rangeMax = mode === "segment" && current ? current.endSeconds : mediaDuration;
+  const selectedSegments = segments.filter((segment) =>
+    selectedSegmentIds.includes(segment.id),
+  );
+  const rangeMin =
+    mode === "segment" && selectedSegments.length > 0
+      ? selectedSegments[0].startSeconds
+      : 0;
+  const rangeMax =
+    mode === "segment" && selectedSegments.length > 0
+      ? selectedSegments[selectedSegments.length - 1].endSeconds
+      : mediaDuration;
 
   useEffect(() => {
     function dismissExplanation(event: PointerEvent) {
@@ -89,9 +102,9 @@ export function ListenExperience({
 
   const handleTimeUpdate: ReactEventHandler<HTMLAudioElement> = (event) => {
     const audio = event.currentTarget;
-    if (mode === "segment" && current && audio.currentTime >= current.endSeconds) {
+    if (mode === "segment" && audio.currentTime >= rangeMax) {
       audio.pause();
-      audio.currentTime = Math.max(current.endSeconds - 0.1, current.startSeconds);
+      audio.currentTime = Math.max(rangeMax - 0.1, rangeMin);
       setCurrentTime(audio.currentTime);
       return;
     }
@@ -118,10 +131,10 @@ export function ListenExperience({
       audio.pause();
       return;
     }
-    if (mode === "segment" && current) {
-      if (audio.currentTime < current.startSeconds || audio.currentTime >= current.endSeconds - 0.15) {
-        audio.currentTime = current.startSeconds;
-        setCurrentTime(current.startSeconds);
+    if (mode === "segment") {
+      if (audio.currentTime < rangeMin || audio.currentTime >= rangeMax - 0.15) {
+        audio.currentTime = rangeMin;
+        setCurrentTime(rangeMin);
       }
     }
     void audio.play().catch(() => {
@@ -145,10 +158,24 @@ export function ListenExperience({
     setSelectedText("");
     setSelectedExplanation("");
     setNoteSaved(false);
-    if (next === "segment" && current && audio && loadState === "ready") {
+    if (next === "segment" && audio && loadState === "ready") {
+      const firstSelected = selectedSegments[0];
       audio.pause();
-      audio.currentTime = current.startSeconds;
-      setCurrentTime(current.startSeconds);
+      audio.currentTime = firstSelected?.startSeconds ?? 0;
+      setCurrentTime(firstSelected?.startSeconds ?? 0);
+    }
+  }
+
+  function confirmCustomSegments(ids: string[]) {
+    setSelectedSegmentIds(ids);
+    setMode("segment");
+    setSelectingSegments(false);
+    const first = segments.find((segment) => segment.id === ids[0]);
+    const audio = audioRef.current;
+    if (first && audio && loadState === "ready") {
+      audio.pause();
+      audio.currentTime = first.startSeconds;
+      setCurrentTime(first.startSeconds);
     }
   }
 
@@ -211,6 +238,21 @@ export function ListenExperience({
   }
 
   const audioUnavailable = loadState === "error";
+
+  if (selectingSegments) {
+    return (
+      <CustomSegmentSelector
+        confirmLabel="完成"
+        description="点击选择段落，Shift+点击可快速选择连续范围"
+        initialSelectedIds={selectedSegmentIds}
+        onCancel={() => setSelectingSegments(false)}
+        onConfirm={confirmCustomSegments}
+        segments={segments}
+        title="自定义段落"
+        tone="listen"
+      />
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -285,6 +327,7 @@ export function ListenExperience({
           {mode === "segment" ? (
             <button
               className="shrink-0 text-[11px] font-medium text-subtle transition-colors hover:text-ink"
+              onClick={() => setSelectingSegments(true)}
               type="button"
             >
               自定义段落 ›
