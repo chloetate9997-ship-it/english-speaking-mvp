@@ -30,7 +30,9 @@ function CollapsibleSection({
     <section
       className={cn(
         "border-b border-line last:border-b-0",
-        featured ? "pb-3" : "pb-2.5",
+        featured
+          ? "shrink-0 py-3"
+          : "flex min-h-[52px] flex-1 flex-col justify-center py-2.5",
       )}
     >
       <button
@@ -44,7 +46,14 @@ function CollapsibleSection({
         onClick={() => collapsible && setIsOpen((value) => !value)}
         type="button"
       >
-        <h2 className={cn("font-semibold text-ink", featured ? "text-sm" : "text-[13px]")}>{title}</h2>
+        <h2
+          className={cn(
+            "flex items-center gap-2 font-semibold text-ink",
+            featured ? "text-sm before:h-3.5 before:w-1 before:rounded-full before:bg-accent-red before:content-['']" : "text-[13px]",
+          )}
+        >
+          {title}
+        </h2>
         {collapsible ? (
           <span aria-hidden className="shrink-0 text-lg leading-none text-subtle">
             {expanded ? "−" : "+"}
@@ -72,13 +81,15 @@ export function MobileAppShell({
       <div className="mx-auto flex w-full max-w-[1160px] items-start justify-center gap-10 px-0 sm:px-6 lg:px-8">
         <aside
           aria-label="项目介绍"
-          className="sticky top-10 hidden min-h-[860px] w-[400px] shrink-0 pr-2 lg:block"
+          className="sticky top-10 hidden h-[860px] w-[400px] shrink-0 flex-col pr-2 lg:flex"
         >
-          <h1 className="text-2xl font-bold leading-tight text-ink">
-            英语口语学习程序 MVP
-          </h1>
+          <div className="shrink-0 rounded-[18px] bg-[#ffe2da] px-5 py-4">
+            <h1 className="text-2xl font-bold leading-tight tracking-[-0.02em] text-ink">
+              英语口语学习程序 MVP
+            </h1>
+          </div>
 
-          <div className="mt-4 space-y-3 text-sm leading-snug text-subtle">
+          <div className="mt-2 flex min-h-0 flex-1 flex-col text-sm leading-snug text-subtle">
             {/* 第一部分：为什么做这个产品 - 默认全部展开 */}
             <CollapsibleSection
               collapsible={false}
