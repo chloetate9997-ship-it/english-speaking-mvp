@@ -274,13 +274,23 @@ export function ListenExperience({
             {audioError}
           </p>
         ) : null}
-        <SegmentedControl
-          ariaLabel="播放范围"
-          className="mt-4 w-[160px] p-0.5 [&_button]:min-h-7 [&_button]:px-2 [&_button]:text-xs"
-          onChange={handleModeChange}
-          options={[...modeOptions]}
-          value={mode}
-        />
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <SegmentedControl
+            ariaLabel="播放范围"
+            className="w-[152px] shrink-0 p-0.5 [&_button]:min-h-7 [&_button]:px-2 [&_button]:text-xs"
+            onChange={handleModeChange}
+            options={[...modeOptions]}
+            value={mode}
+          />
+          {mode === "segment" ? (
+            <button
+              className="shrink-0 text-[11px] font-medium text-subtle transition-colors hover:text-ink"
+              type="button"
+            >
+              自定义段落 ›
+            </button>
+          ) : null}
+        </div>
       </section>
 
       {mode === "full" || mode === "segment" ? (
@@ -300,11 +310,6 @@ export function ListenExperience({
               </button>
             </div>
             <div className="flex shrink-0 items-center gap-3">
-              {mode === "segment" ? (
-                <button className="text-[11px] text-subtle" type="button">
-                  自定义段落 ›
-                </button>
-              ) : null}
               <Link
                 className="text-[11px] font-medium text-ink"
                 href={`/lessons/${lessonId}/notes`}

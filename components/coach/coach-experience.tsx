@@ -9,7 +9,6 @@ import { SurfaceCard } from "@/components/ui/surface-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { FeedbackSection } from "@/components/feedback/feedback-section";
 import { PrimaryAction } from "@/components/ui/primary-action";
-import { StepTabs } from "@/components/navigation/step-tabs";
 import { CoachRecorder } from "@/components/coach/coach-recorder";
 import {
   COACH_SCENARIOS,
@@ -100,7 +99,7 @@ interface ApiResponse {
   error?: string;
 }
 
-export function CoachExperience({ lessonId, lessonTitle }: CoachExperienceProps) {
+export function CoachExperience({ lessonId }: CoachExperienceProps) {
   const [state, setState] = useState<PersistedState>(EMPTY);
   const [hydrated, setHydrated] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -247,22 +246,8 @@ export function CoachExperience({ lessonId, lessonTitle }: CoachExperienceProps)
 
   return (
     <MobileAppShell>
-      <PageHeader
-        action={
-          <Link className="text-sm font-medium text-brand" href={`/lessons/${lessonId}/notes`}>
-            我的笔记
-          </Link>
-        }
-        backHref={`/lessons/${lessonId}`}
-        title="AI 情景口语教练"
-      />
-      <main className="space-y-5 px-page pb-10 pt-2">
-        <StepTabs
-          current="retell"
-          listenHref={`/lessons/${lessonId}`}
-          retellHref={`/lessons/${lessonId}`}
-        />
-        <p className="text-center text-xs text-subtle">{lessonTitle}</p>
+      <PageHeader backHref={`/lessons/${lessonId}`} title="AI 情景口语教练" />
+      <main className="space-y-5 px-page pb-10 pt-4">
 
         {state.phase === "scenario" ? (
           <ScenarioPicker onPick={startScenario} />
@@ -311,16 +296,16 @@ export function CoachExperience({ lessonId, lessonTitle }: CoachExperienceProps)
 function ScenarioPicker({ onPick }: { onPick: (scenario: CoachScenario) => void }) {
   return (
     <div className="space-y-3">
-      <SurfaceCard className="bg-warm">
+      <div className="pb-2">
         <SectionHeader title="选择练习场景" />
-        <p className="mt-2 text-sm text-subtle">
-          MVP 提供三个基于 lesson-01 的场景，选择后开始多轮情景对话。
+        <p className="mt-1.5 text-sm leading-relaxed text-subtle">
+          选择一个场景，开始多轮英语对话练习。
         </p>
-      </SurfaceCard>
+      </div>
       {COACH_SCENARIOS.map((scenario) => (
         <button
           aria-label={`选择场景 ${scenario.title}`}
-          className="w-full rounded-lg bg-card p-4 text-left shadow-card transition-opacity hover:opacity-90"
+          className="w-full rounded-lg border border-line bg-card p-4 text-left transition-colors hover:border-subtle"
           key={scenario.id}
           onClick={() => onPick(scenario)}
           type="button"
@@ -330,7 +315,7 @@ function ScenarioPicker({ onPick }: { onPick: (scenario: CoachScenario) => void 
             <ChevronRight aria-hidden className="size-5 shrink-0 text-subtle" />
           </div>
           <p className="mt-1 text-xs text-subtle">{scenario.description}</p>
-          <p className="mt-2 text-xs text-brand">
+          <p className="mt-2 text-xs font-medium text-ink">
             目标表达：{scenario.targetExpressions.map((t) => t.expression).join(" · ")}
           </p>
         </button>
@@ -413,7 +398,7 @@ function PracticeView({
 
   return (
     <div className="space-y-4">
-      <SurfaceCard>
+      <SurfaceCard className="border border-line shadow-none">
         <div className="flex items-center justify-between">
           <SectionHeader title={scenario.title} />
           <span className="shrink-0 text-xs font-semibold text-accent-red">{roundLabel}</span>
@@ -421,7 +406,7 @@ function PracticeView({
         <p className="mt-2 text-xs text-subtle">{scenario.description}</p>
       </SurfaceCard>
 
-      <SurfaceCard className="bg-warm">
+      <SurfaceCard className="border border-line shadow-none">
         <SectionHeader title="本轮目标表达" />
         <p className="mt-2 text-sm font-semibold text-ink">{currentTargetExpression}</p>
         {currentTargetChinese ? (
@@ -434,37 +419,37 @@ function PracticeView({
 
       <div className="space-y-3">
         {turns.length === 0 ? (
-          <FeedbackSection title="Agent 提问">
+          <FeedbackSection className="border border-line shadow-none" title="Agent 提问">
             <p>{scenario.opener}</p>
           </FeedbackSection>
         ) : null}
         {turns.map((turn) => (
           <div className="space-y-3" key={turn.turnNo}>
             {turn.userTranscript ? (
-              <FeedbackSection title="你说的">
+              <FeedbackSection className="border border-line shadow-none" title="你说的">
                 <p>{turn.userTranscript}</p>
               </FeedbackSection>
             ) : null}
-            <FeedbackSection title={`Agent 回复 · 第 ${turn.turnNo} 轮`}>
+            <FeedbackSection className="border border-line shadow-none" title={`Agent 回复 · 第 ${turn.turnNo} 轮`}>
               <p>{turn.reply}</p>
               <p className="mt-2 text-xs text-subtle">{actionGuide(turn.action)}</p>
             </FeedbackSection>
             {turn.hint ? (
-              <FeedbackSection title="提示" tone="warm">
+              <FeedbackSection className="border border-line shadow-none" title="提示">
                 <p>{turn.hint}</p>
               </FeedbackSection>
             ) : null}
             {turn.correction ? (
-              <FeedbackSection title="纠错" tone="warm">
+              <FeedbackSection className="border border-line shadow-none" title="纠错">
                 <p>{turn.correction}</p>
               </FeedbackSection>
             ) : null}
             {turn.naturalVersion ? (
-              <FeedbackSection title="自然表达">
+              <FeedbackSection className="border border-line shadow-none" title="自然表达">
                 <p>{turn.naturalVersion}</p>
               </FeedbackSection>
             ) : null}
-            <SurfaceCard className="bg-segment">
+            <SurfaceCard className="border border-line bg-card shadow-none">
               <p className="text-xs text-subtle">
                 含义 {turn.scores.meaning} · 目标表达 {turn.scores.targetUsage} · 语法{" "}
                 {turn.scores.grammar} · 自然度 {turn.scores.naturalness}
@@ -475,7 +460,7 @@ function PracticeView({
       </div>
 
       {errorMessage ? (
-        <p role="alert" className="rounded-lg bg-warm p-3 text-xs leading-relaxed text-ink">
+        <p role="alert" className="rounded-lg border border-line bg-card p-3 text-xs leading-relaxed text-ink">
           {errorMessage}
         </p>
       ) : null}
@@ -508,7 +493,7 @@ function PracticeView({
       </div>
 
       {textMode ? (
-        <SurfaceCard>
+        <SurfaceCard className="border border-line shadow-none">
           <label className="text-sm font-semibold text-ink" htmlFor="coach-typed">
             用英语写出你的回答
           </label>
