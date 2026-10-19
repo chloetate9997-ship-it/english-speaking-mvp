@@ -42,14 +42,6 @@ export default async function ResultPage({ params }: ResultPageProps) {
   return (
     <MobileAppShell>
       <PageHeader
-        action={
-          <Link
-            className="text-sm font-medium text-brand"
-            href={`/lessons/${lessonId}/notes`}
-          >
-            我的笔记
-          </Link>
-        }
         backHref={`/lessons/${lessonId}/retell`}
         title="复述对比结果"
       />
